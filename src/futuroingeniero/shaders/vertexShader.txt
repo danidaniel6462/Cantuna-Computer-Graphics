@@ -1,0 +1,98 @@
+#version 400 core
+
+/*
+	GLSL
+	
+	Archivos creados para realizar cálculos de sombredos, luces, colors, transparencias, etc
+	Utilizando la GPU del computador
+	
+	La CPU envía datos hacia la GPU para poder mostrar en pantalla gran calidad de imágenes
+	pero el CPU se sobrecarga de cálculos así que es importante dividir la sobre carga de cálculos entre la CPU y el GPU
+	por este motivo se crean los ShadersPrograms.
+	
+	Dentro de los Shader tenemos dos tipos de archivos, se explica de manera resumida lo que son cada uno de estos archivos
+	
+	- VertexShader:  es el archivo que recibe los datos de la CPU para realizar los cálculos dentro de la GPU
+					 Este archivo realiza un sólo cálculo para cada vértice de los modelos
+	- FragmentShader: este archivo recibe los datos de salida del VertexShader para realizar cálculos en cada píxel de los modelos
+	
+	Para realiza la transferencia de datos es importante decirle al programa que queremos calcular, para ello utilizamos las palabras:
+	
+	in (tipo dato) : la palabra in representan los datos de entrada para el Shader
+	out (tipo dato): la palabra out representan los datos de salida que serán tomados por el el FragmentShader, para realizar
+					 cálculos en cada pixel.
+	
+	VARIABLES:
+	
+	vec{1|2|3}: vector {1|2|3} coordenadas
+	sampler{1|2|3}D: variable encargada a acceder a una textura 
+	 
+
+	TIPO DE VARIABLES UNIFORM: son usados para realizar cálculos uniformes dentro del escenario
+					   ejemplo:
+					   
+				uniform vec3 colorLight; representa una variable que afectará al escenario de manera uniforme
+					   					en este caso si queremos representar el solo escribiríamos en RBG el color de sol.
+				uniform vec3 positionLight; una vez que tenemos el color del sol se debe ubicar la posición del mismo
+										por ejemplo en la vida real el sol varía por cada hora en la mañana, así entoces se puede
+										representar que el sol sale del este y se oculta en el oeste o que simplemente está a una hora determinada
+
+*/
+
+
+in vec3 position;
+in vec2 textureCoords;
+in vec3 normal;
+
+out vec2 pass_textureCoords;
+
+// variable para vetor normal y vector que apunta hacia la luz
+// el cálculo de producto escalar entre estos dos vectores es 1 cuando tienen las misma dirección
+// la luz sería lo más intensa en esa cara y si el valor es 0 la cara no recibe nada de luz 
+out vec3 surfaceNormal;
+out vec3 toLightVector;
+out vec3 toCameraVector; 
+
+uniform mat4 transformationMatrix;
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform vec3 luzPosicion;
+
+void main(void){
+
+	vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
+	gl_Position = projectionMatrix * viewMatrix * worldPosition;
+	pass_textureCoords = textureCoords;
+	
+	// calculamos las normales de cada superficie del modelo
+	// para esto debemos tomar en cuanta que debemos multiplicar por la transformationMatrix, ya que nuestro modelo va a moverse dentro del espacio
+	// finalmente al realizar la operación debemos devolver valores xyz para poder realizar los cálculos en el fragmentShader
+	surfaceNormal = (transformationMatrix * vec4(normal, 0.0)).xyz;
+	toLightVector = luzPosicion - worldPosition.xyz;
+	toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

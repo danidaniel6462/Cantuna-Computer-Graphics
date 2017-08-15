@@ -22,7 +22,7 @@ void main(void){
 	// este cálculo se realiza para que cada píxel represente la intensidad de la luz
 	float nDotLuz = dot(unitarioNormal, unitarioLuzVector);
 	// la operación dot devuelve valores incluso negativos, lo que se hace es despreciar los valores negativos y ponerlos 0 si fuere el caso 
-	float brillo = max(nDotLuz, 0.0);
+	float brillo = max(nDotLuz, 0.3);
 	// multiplicamos el factor brillo por el color de la luz para obtener el color e intensidad final de cada pixel
 	vec3 diffuse = brillo * luzColor;
 	

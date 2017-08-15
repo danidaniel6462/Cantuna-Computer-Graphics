@@ -28,16 +28,16 @@ public class Camara {
 	
 	public void movimiento() {
 		if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
-			posicion.z -= 0.02f;
+			posicion.z -= 0.5f;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
-			posicion.x += 0.02f;
+			posicion.x += 0.5f;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
-			posicion.x -= 0.02f;
+			posicion.x -= 0.5f;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			posicion.z += 0.02f;
+			posicion.z += 0.5f;
 		}
 	}
 
@@ -67,9 +67,5 @@ public class Camara {
 	 */
 	public float getRoll() {
 		return roll;
-	}
-	
-	
-	
-	
+	}	
 }

@@ -3,6 +3,10 @@
  */
 package futuroingeniero.engineTest;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -13,6 +17,7 @@ import futuroingeniero.models.RawModel;
 import futuroingeniero.models.TextureModel;
 import futuroingeniero.renderEngine.DisplayManager;
 import futuroingeniero.renderEngine.Loader;
+import futuroingeniero.renderEngine.MasterRenderer;
 import futuroingeniero.renderEngine.OBJLoader;
 import futuroingeniero.renderEngine.Renderer;
 import futuroingeniero.shaders.StaticShader;
@@ -36,19 +41,15 @@ public class MainGameLoop {
 		DisplayManager.createDisplay();
 		// objeto para cargar los modelos en memoria para posteriormente ser renderizados
 		Loader loader = new Loader();
-		// programa Shader para los modelos 3D
-		StaticShader shader = new StaticShader();
-		// objeto para renderizar los modelos cargados en memoria incuyendo la cámara
-		Renderer renderer = new Renderer(shader);
 		
 		// carga de los modelos 3D dentro del escenario 
 		RawModel model = OBJLoader.loadObjModel("gaby", loader);
 		RawModel modelStall = OBJLoader.loadObjModel("stall", loader);
-		// RawModel cubo = OBJLoader.loadObjModel("cubo", loader);
+		RawModel cuboModel = OBJLoader.loadObjModel("cubo", loader);
 		// carga de texturas de cada modelo
 		TextureModel staticModel = new TextureModel(model, new ModelTexture(loader.loadTexture("gabyTexture")));
 		TextureModel staticModelStall = new TextureModel(modelStall, new ModelTexture(loader.loadTexture("stallTexture")));
-		//TextureModel staticModelCubo = new TextureModel(cubo, new ModelTexture(loader.loadTexture("BlackColor")));
+		TextureModel cubo = new TextureModel(cuboModel, new ModelTexture(loader.loadTexture("BlackColor")));
 		
 		ModelTexture textureStall = staticModelStall.getTexture();
 		textureStall.setShineDamper(10);
@@ -58,6 +59,15 @@ public class MainGameLoop {
 		Entity entidad = new Entity(staticModel, new Vector3f(5, 0, -20), 0, 0, 0, 1);
 		Entity entidadStall = new Entity(staticModelStall, new Vector3f(-5, -2.5f, -20), 0, 0, 0, 1);
 		
+		List<Entity> variosCubos = new ArrayList<Entity>();
+		Random random = new Random();
+		
+		for (int i = 0; i < 200; i++) {
+			float x = random.nextFloat() * 100 - 50;
+			float y = random.nextFloat() * 100 - 50;
+			float z = random.nextFloat() * -300;
+			variosCubos.add(new Entity(cubo, new Vector3f(x,  y,  z), random.nextFloat() * 180f, random.nextFloat() * 180f, random.nextFloat() * 180f, 1f));			
+		}
 		
 		// creamos una luz en el escenario
 		Light luz = new Light(new Vector3f(200, 200, 100), new Vector3f(1, 1, 1));
@@ -65,6 +75,7 @@ public class MainGameLoop {
 		// creación de la cámara a utilizar 
 		Camara camera = new Camara();
 				
+		MasterRenderer renderer = new MasterRenderer();
 		// bucle del juego real
 		// donde ocurren todas las actualizaciones
 		while(!Display.isCloseRequested()) {
@@ -74,22 +85,18 @@ public class MainGameLoop {
 			camera.movimiento();
 			
 			// render
-			renderer.prepare();
-			shader.start();
+			renderer.render(luz, camera);
 			
-			// controles();
+			for (Entity cube : variosCubos) {
+				renderer.procesarEntidad(cube);
+			}
 			
-			shader.loadLuz(luz);
-			
-			shader.loadViewMatrix(camera);
-			renderer.render(entidad, shader);
-			renderer.render(entidadStall, shader);
-			//renderer.render(new Entity(staticModelCubo, new Vector3f(x, y, z -20), 0, 0, 0, 1), shader);
-			shader.stop();
-			
+			renderer.procesarEntidad(entidadStall);
+			renderer.procesarEntidad(entidad);
+
 			DisplayManager.updateDisplay();	
 		}
-		shader.cleanUp();
+		renderer.cleanUp();
 		loader.claenUp();
 		DisplayManager.closeDisplay();
 	}

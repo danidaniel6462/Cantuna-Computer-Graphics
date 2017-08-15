@@ -22,7 +22,7 @@ public class Maths {
 	 * @param ry variable para controlar la rotación en Y
 	 * @param rz variable para controlar la rotación en Z
 	 * @param scale variable para controlar la escala del objeto
-	 * @return devuelve una matriz lista para poder aplicacar a los objetos 3D
+	 * @return devuelve una matriz lista para poder aplicar a los objetos 3D
 	 */
 	public static Matrix4f createTransformationMatrix(Vector3f translation, float rx, float ry,
 			float rz, float scale) {

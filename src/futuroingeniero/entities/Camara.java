@@ -4,6 +4,8 @@
 package futuroingeniero.entities;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
 /**
@@ -19,12 +21,71 @@ public class Camara {
 	 * @param picado variable para la rotación en Y
 	 * @param roll variable para la rotación en Z
 	 */
-	private Vector3f posicion = new Vector3f(0, 0, 0);
-	private float paneo; 
-	private float picado;
-	private float roll;
+	private Vector3f posicion = new Vector3f(0, 5, 0);
+	private float paneo;  // pitch
+	private float picado; // yaw
+	private float roll; // roll
 	
-	public Camara() {}
+	private float speed;
+	
+	// public Camara() {}
+	
+	public Camara()
+	{
+		
+		this.speed = 0.5f;
+	}
+	
+	public void move()
+	{
+		
+		picado =  - (Display.getWidth() - Mouse.getX() / 2);
+		paneo =  (Display.getHeight() / 2) - Mouse.getY();
+		
+		if (paneo >= 90)
+		{
+			
+			paneo = 90;
+			
+		}
+		else if (paneo <= -90)
+		{
+			
+			paneo = -90;
+			
+		}
+		
+		if (Keyboard.isKeyDown(Keyboard.KEY_W))
+		{
+
+			posicion.z += -(float)Math.cos(Math.toRadians(picado)) * speed;
+			posicion.x += (float)Math.sin(Math.toRadians(picado)) * speed;
+			
+		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_S))
+		{
+			posicion.z -= -(float)Math.cos(Math.toRadians(picado)) * speed;
+			posicion.x -= (float)Math.sin(Math.toRadians(picado)) * speed;
+
+
+		}
+
+		if (Keyboard.isKeyDown(Keyboard.KEY_D))
+		{
+			
+			posicion.z += (float)Math.sin(Math.toRadians(picado)) * speed;
+			posicion.x += (float)Math.cos(Math.toRadians(picado)) * speed;
+
+		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_A))
+		{
+			
+			posicion.z -= (float)Math.sin(Math.toRadians(picado)) * speed;
+			posicion.x -= (float)Math.cos(Math.toRadians(picado)) * speed;
+
+		}
+		
+	}
 	
 	public void movimiento() {
 		if(Keyboard.isKeyDown(Keyboard.KEY_W)) {

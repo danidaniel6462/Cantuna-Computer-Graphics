@@ -6,7 +6,6 @@ package futuroingeniero.renderEngine;
 import java.util.List;
 import java.util.Map;
 
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -15,62 +14,41 @@ import org.lwjgl.util.vector.Matrix4f;
 
 import futuroingeniero.entities.Entity;
 import futuroingeniero.models.RawModel;
-import futuroingeniero.models.TextureModel;
+import futuroingeniero.models.TexturedModel;
 import futuroingeniero.shaders.StaticShader;
 import futuroingeniero.textures.ModelTexture;
 import futuroingeniero.toolbox.Maths;
 
 /**
  * @author Daniel Loza
- *
- * Renderer.java
- * Clase que será llamada una vez por frame
+ * 
+ * <h1>Clase EntityRender</h1>
+ * Clase que renderiza las diferentes entidades o modelos 3D con sus respectivas características
+ * en esta clase también se crea una cámara para poder ver el mundo creado con las entidades
  */
-public class Renderer {
+public class EntityRenderer {
 
-	/**
-	 * @param FOV ángulo de proyección de la cámara
-	 * @param PLANO_CERCANO plano que está cercano a la cámara, punto en el eje Z
-	 * @param PLANO_LEJANO plano de la profundidad de la cámara.
-	 */
-	private static final float FOV = 70;
-	private static final float PLANO_CERCANO = 0.1f;
-	private static final float PLANO_LEJANO = 1000f;
-	
-	private Matrix4f projectionMatrix;
 	private StaticShader shader;
 	
 	/**
-	 * Contructor de la clase Renderer, incia la matriz de proyección (vista de la cámara)
+	 * Contructor de la clase EntityRenderer, incia la matriz de proyección (vista de la cámara) y su programShader
 	 * @param shader varible de la clase StaticShader 
+	 * @param projectionMatrix vista de la cámara sobre la entidad
 	 */
-	public Renderer(StaticShader shader) {
-		// activamos la renderizaciónm de las caras que se ven, pero en este caso sacrificamos la parte posterior de las caras que no se ven
-		this.shader = shader;
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_BACK);
-		createProjectionMatrix();
-		shader.start();
-		shader.loadProjectionMatrix(projectionMatrix);
-		shader.stop();
-	}
-	
-	/**
-	 * Método que prepara el espacio donde se dibujarán los objetos 3D 
-	 */
-	public void prepare() {
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glClearColor(0, 0.3f, 0.0f, 1);
-	}
+    public EntityRenderer(StaticShader shader, Matrix4f projectionMatrix) {
+        this.shader = shader;
+        shader.start();
+        shader.loadProjectionMatrix(projectionMatrix);
+        shader.stop();
+    }
 	
 	/**
 	 * render 
 	 * Método que tiene un hasMap para identificar las texturas de las entidades
 	 * @param entidades variable hasmap que tiene como Key el id de la textura y como datos una lista de entidades
 	 */
-	public void render(Map<TextureModel, List<Entity>> entidades) {
-		for(TextureModel model : entidades.keySet()) {
+	public void render(Map<TexturedModel, List<Entity>> entidades) {
+		for(TexturedModel model : entidades.keySet()) {
 			prepareTextureModel(model);
 			List<Entity> batch = entidades.get(model);
 			for(Entity entidad : batch) {
@@ -87,7 +65,7 @@ public class Renderer {
 	 * Método que prepara el uso de la textura en el modelo, enlaza el modelo con la textura
 	 * @param model modelo al cual se utilizará la textura
 	 */
-	private void prepareTextureModel(TextureModel model) {
+	private void prepareTextureModel(TexturedModel model) {
 		RawModel rawModel = model.getRawModel();
 		// cargamos el VAO
 		GL30.glBindVertexArray(rawModel.getVaoID());
@@ -128,17 +106,16 @@ public class Renderer {
 	private void prepareInstance(Entity entidad) {
 		Matrix4f transformationMatrix = Maths.createTransformationMatrix(entidad.getPosition(),
 				entidad.getRotX(), entidad.getRotY(), entidad.getRotZ(), entidad.getScale());
-		shader.loadTranformationMatrix(transformationMatrix);
+		shader.loadTransformationMatrix(transformationMatrix);
 	}
-	
 	/**
 	 * @deprecated
-	 * Método que dibuja todos los objetos dentro de la escena
-	 * @param textureModel variable de un modelo y textura para ser renderizado
+	 * Método que dibuja todas las entidades dentro de la escena
+	 * @param entidad objeto 3D para renderizar
+	 * @param shader variable que enlaza el programa Shader con la entidad
 	 */
-
 	public void render(Entity entidad, StaticShader shader) {
-		TextureModel model = entidad.getModel();
+		TexturedModel model = entidad.getModel();
 		RawModel rawModel = model.getRawModel();
 		// cargamos el VAO
 		GL30.glBindVertexArray(rawModel.getVaoID());
@@ -154,7 +131,7 @@ public class Renderer {
 		
 		Matrix4f transformationMatrix = Maths.createTransformationMatrix(entidad.getPosition(),
 				entidad.getRotX(), entidad.getRotY(), entidad.getRotZ(), entidad.getScale());
-		shader.loadTranformationMatrix(transformationMatrix);
+		shader.loadTransformationMatrix(transformationMatrix);
 		
 		ModelTexture texture = model.getTexture();
 		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
@@ -171,22 +148,4 @@ public class Renderer {
 		// finalmente desactivamos la lista VAO
 		GL30.glBindVertexArray(0);
 	}	
-	
-	/**
-	 * Método para crear la matrix de proyección, 
-	 */
-    private void createProjectionMatrix(){
-        float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
-        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
-        float x_scale = y_scale / aspectRatio;
-        float frustum_length = PLANO_LEJANO - PLANO_CERCANO;
- 
-        projectionMatrix = new Matrix4f();
-        projectionMatrix.m00 = x_scale;
-        projectionMatrix.m11 = y_scale;
-        projectionMatrix.m22 = -((PLANO_LEJANO + PLANO_CERCANO) / frustum_length);
-        projectionMatrix.m23 = -1;
-        projectionMatrix.m32 = -((2 * PLANO_CERCANO * PLANO_LEJANO) / frustum_length);
-        projectionMatrix.m33 = 0;
-    }
 }

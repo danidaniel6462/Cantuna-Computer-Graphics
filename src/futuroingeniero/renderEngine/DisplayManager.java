@@ -40,7 +40,7 @@ public class DisplayManager {
 			
 			Display.create(new PixelFormat(), attribs);
 			//Display.create();
-			Display.setTitle("Cantuña");
+			Display.setTitle("Cantuña LWJGL Versión " + org.lwjgl.Sys.getVersion());
 			
 		} catch (LWJGLException e) {
 			e.printStackTrace();
@@ -52,7 +52,6 @@ public class DisplayManager {
 		 * tomando coordenadas 0,0 y ancho y alto
 		 */
 		GL11.glViewport(0, 0, WIDTH, HEIGHT);
-		
 	}
 	
 	/**

@@ -87,7 +87,7 @@ public class Loader {
 	/**
 	 * Método para limpiar la memoria del computador al cerrar la pantalla del Videojuego :3
 	 */
-	public void claenUp() {
+	public void cleanUp() {
 		for(int vao:vaos) {
 			GL30.glDeleteVertexArrays(vao);
 		}

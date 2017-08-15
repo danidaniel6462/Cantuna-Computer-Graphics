@@ -5,7 +5,7 @@ package futuroingeniero.entities;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import futuroingeniero.models.TextureModel;
+import futuroingeniero.models.TexturedModel;
 
 /**
  * @author Daniel Loza
@@ -15,7 +15,7 @@ import futuroingeniero.models.TextureModel;
 
 public class Entity {
 	
-	private TextureModel model;
+	private TexturedModel model;
 	private Vector3f position;
 	private float rotX, rotY, rotZ;
 	private float scale;
@@ -30,7 +30,7 @@ public class Entity {
 	 * @param scale variable que inicializa 
 	 */
 
-	public Entity(TextureModel model, Vector3f position, float rotX, float rotY,
+	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY,
 			float rotZ, float scale) {
 		this.model = model;
 		this.position = position;
@@ -67,14 +67,14 @@ public class Entity {
 	/**
 	 * @return the model
 	 */
-	public TextureModel getModel() {
+	public TexturedModel getModel() {
 		return model;
 	}
 
 	/**
 	 * @param model the model to set
 	 */
-	public void setModel(TextureModel model) {
+	public void setModel(TexturedModel model) {
 		this.model = model;
 	}
 

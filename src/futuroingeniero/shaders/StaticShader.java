@@ -77,7 +77,7 @@ public class StaticShader extends ShaderProgram{
 	 * Método que carga la matriz por medio de la ubicación de la matriz y la matriz correspondiente
 	 * @param matrix matriz uniforme de transformación
 	 */
-	public void loadTranformationMatrix(Matrix4f matrix) {
+	public void loadTransformationMatrix(Matrix4f matrix) {
 		super.loadMatrix(location_transformationMatrix, matrix);
 	}
 	
@@ -102,7 +102,7 @@ public class StaticShader extends ShaderProgram{
 	
 	/**
 	 * Método que carga la matriz de proyección
-	 * @param matrix matriz uniforme de transformación
+	 * @param projection matriz uniforme de transformación
 	 */
 	public void loadProjectionMatrix(Matrix4f projection) {
 		super.loadMatrix(location_projectionMatrix, projection);

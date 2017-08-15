@@ -8,11 +8,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Matrix4f;
+
 import futuroingeniero.entities.Camara;
 import futuroingeniero.entities.Entity;
 import futuroingeniero.entities.Light;
-import futuroingeniero.models.TextureModel;
+import futuroingeniero.models.TexturedModel;
 import futuroingeniero.shaders.StaticShader;
+import futuroingeniero.shaders.TerrainShader;
+import futuroingeniero.terrains.Terrain;
 
 /**
  * @author Daniel Loza
@@ -20,12 +26,41 @@ import futuroingeniero.shaders.StaticShader;
  * Procesador Principal
  */
 public class MasterRenderer {
+	
+	/**
+	 * @param FOV ángulo de proyección de la cámara
+	 * @param PLANO_CERCANO plano que está cercano a la cámara, punto en el eje Z
+	 * @param PLANO_LEJANO plano de la profundidad de la cámara.
+	 */
+	private static final float FOV = 70;
+	private static final float PLANO_CERCANO = 0.1f;
+	private static final float PLANO_LEJANO = 1000f;
+	
+	private Matrix4f projectionMatrix;
+	
 	// programa Shader para los modelos 3D
 	private StaticShader shader = new StaticShader();
 	// objeto para renderizar los modelos cargados en memoria incuyendo la cámara
-	private Renderer renderer = new Renderer(shader);
+	private EntityRenderer renderer;
 	
-	private Map<TextureModel, List<Entity>> entidades = new HashMap<TextureModel, List<Entity>>();
+	// variable para renderizar el terreno
+	private TerrainRenderer terrainRenderer;
+	// variable para enlazar el programa Shader
+	private TerrainShader terrainShader = new TerrainShader();
+	
+	// variable entidades de tipo MAP que guardará las entidades que se desean renderizar guardando así un código para poder encontrarlos a futuro y poder renderizar
+	private Map<TexturedModel, List<Entity>> entidades = new HashMap<TexturedModel, List<Entity>>();
+	private List<Terrain> terrains = new ArrayList<Terrain>();
+	
+	public MasterRenderer() {
+		// activamos la renderizaciónm de las caras que se ven, pero en este caso sacrificamos la parte posterior de las caras que no se ven
+		// sacrificamos las caras posteriores
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
+		createProjectionMatrix();
+		renderer = new EntityRenderer(shader, projectionMatrix);
+		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+	}
 	
 	/**
 	 * Método que realizará la renderización de varios objetos en el escenario del video juego
@@ -34,17 +69,35 @@ public class MasterRenderer {
 	 * @param camara proyección de la cámara y ubicación de la misma 
 	 */
 	public void render(Light sol, Camara camara) {
-		renderer.prepare();
-		shader.start();
-		shader.loadLuz(sol);
-		shader.loadViewMatrix(camara);
-		renderer.render(entidades);
-		shader.stop();
-		entidades.clear();
+		prepare();
+        shader.start();
+        shader.loadLuz(sol);
+        shader.loadViewMatrix(camara);
+        renderer.render(entidades);
+        shader.stop();
+        terrainShader.start();
+        terrainShader.loadLuz(sol);
+        terrainShader.loadViewMatrix(camara);
+        terrainRenderer.render(terrains);
+        terrainShader.stop();
+        terrains.clear();
+        entidades.clear();
 	}
 	
+	/**
+	 * Método para procesar el terreno para poder mostrarlo en el espacio
+	 * @param terrain variable para el modelo del terreno 
+	 */
+	public void procesarTerreno(Terrain terrain) {
+		terrains.add(terrain);
+	}
+	
+	/**
+	 * Método para crear las entidades o modelos 3D
+	 * @param entidad variable para determinar el modelo a renderizar 
+	 */
 	public void procesarEntidad(Entity entidad) {
-		TextureModel entidadModelo = entidad.getModel();
+		TexturedModel entidadModelo = entidad.getModel();
 		List<Entity> batch = entidades.get(entidadModelo);
 		
 		// verificamos si el batch o lote está vacío para poder añadir más datos a la lista de entidades al HasMpa
@@ -60,10 +113,38 @@ public class MasterRenderer {
 	}
 	
 	/**
-	 * Método para limpiar el shader del video juego
+	 * Método para limpiar los programas de Shader (sombreado) una vez cerrado el video juego 
 	 */
 	public void cleanUp() {
 		shader.cleanUp();
+		terrainShader.cleanUp();
 	}
+	
+	/**
+	 * Método que prepara el espacio donde se dibujarán los objetos 3D 
+	 */
+	public void prepare() {
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		GL11.glClearColor(0, 0.0f, 0.0f, 1);
+	}
+	
+	/**
+	 * Método para crear la matrix de proyección, 
+	 */
+    private void createProjectionMatrix(){
+        float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
+        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
+        float x_scale = y_scale / aspectRatio;
+        float frustum_length = PLANO_LEJANO - PLANO_CERCANO;
+ 
+        projectionMatrix = new Matrix4f();
+        projectionMatrix.m00 = x_scale;
+        projectionMatrix.m11 = y_scale;
+        projectionMatrix.m22 = -((PLANO_LEJANO + PLANO_CERCANO) / frustum_length);
+        projectionMatrix.m23 = -1;
+        projectionMatrix.m32 = -((2 * PLANO_CERCANO * PLANO_LEJANO) / frustum_length);
+        projectionMatrix.m33 = 0;
+    }
 	
 }

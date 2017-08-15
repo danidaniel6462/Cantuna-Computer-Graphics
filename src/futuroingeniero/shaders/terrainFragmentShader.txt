@@ -1,0 +1,50 @@
+#version 400 core
+
+in vec2 pass_textureCoords;
+in vec3 surfaceNormal; 
+in vec3 toLightVector;
+in vec3 toCameraVector;
+
+out vec4 salida_Color;
+
+uniform sampler2D muestreoTextura;
+uniform vec3 luzColor;
+uniform float shineDamper;
+uniform float reflectivity; 
+
+void main(void){
+
+	// normalizamos los vectores surfaceNormal y toLightVector 
+	vec3 unitarioNormal = normalize(surfaceNormal);
+	vec3 unitarioLuzVector = normalize(toLightVector);
+	
+	// realizamos el cálculos producto escalar o DOT entre los dos vectores normalizados
+	// este cálculo se realiza para que cada píxel represente la intensidad de la luz
+	float nDotLuz = dot(unitarioNormal, unitarioLuzVector);
+	// la operación dot devuelve valores incluso negativos, lo que se hace es despreciar los valores negativos y ponerlos 0 si fuere el caso 
+	float brillo = max(nDotLuz, 0.3);
+	// multiplicamos el factor brillo por el color de la luz para obtener el color e intensidad final de cada pixel
+	vec3 diffuse = brillo * luzColor;
+	
+	vec3 unitarioVectorToCamera = normalize(toCameraVector);
+	vec3 luzDireccion = - unitarioLuzVector;
+	vec3 direccionLuzReflejada = reflect(luzDireccion, unitarioNormal);
+	
+	float specularFactor = dot(direccionLuzReflejada, unitarioVectorToCamera);
+	specularFactor = max(specularFactor, 0.0);
+	float damperFactor = pow(specularFactor, shineDamper);
+	vec3 finalSpecular = damperFactor * reflectivity * luzColor;
+	
+	// el color depende de los atributos que se den a los objetos
+	// el color final solo es una textura 
+	
+	// salida_Color = texture(muestreoTextura, pass_textureCoords);
+	
+	// color de salida, multiplicando la luz difusa con la textura del modelo
+	// salida_Color = vec4(diffuse, 1.0) * texture(muestreoTextura, pass_textureCoords);
+	
+	// el color de salida es el final con un material que da brillo al objeto 
+	salida_Color = vec4(diffuse, 1.0) * texture(muestreoTextura, pass_textureCoords) + vec4(finalSpecular, 1.0);
+	
+	
+}

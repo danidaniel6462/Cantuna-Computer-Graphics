@@ -9,7 +9,7 @@ import futuroingeniero.textures.ModelTexture;
  * @author Daniel Loza
  *
  */
-public class TextureModel {
+public class TexturedModel {
 
 	private RawModel rawModel;
 	private ModelTexture texture;
@@ -19,7 +19,7 @@ public class TextureModel {
 	 * @param model modelo Raw
 	 * @param texture textura para el modelo
 	 */
-	public TextureModel(RawModel model, ModelTexture texture) {
+	public TexturedModel(RawModel model, ModelTexture texture) {
 		this.rawModel = model;
 		this.texture = texture;
 	}

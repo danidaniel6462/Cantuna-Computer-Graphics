@@ -36,6 +36,10 @@ public class MasterRenderer {
 	private static final float PLANO_CERCANO = 0.1f;
 	private static final float PLANO_LEJANO = 1000f;
 	
+	private static final float RED = 137f / 255f;
+	private static final float GREEN = 200f / 255f;
+	private static final float BLUE = 230f / 255f;
+	
 	private Matrix4f projectionMatrix;
 	
 	// programa Shader para los modelos 3D
@@ -52,14 +56,28 @@ public class MasterRenderer {
 	private Map<TexturedModel, List<Entity>> entidades = new HashMap<TexturedModel, List<Entity>>();
 	private List<Terrain> terrains = new ArrayList<Terrain>();
 	
+	/**
+	 * Constructor de la Clase MasterRenderer
+	 */
 	public MasterRenderer() {
 		// activamos la renderizaciónm de las caras que se ven, pero en este caso sacrificamos la parte posterior de las caras que no se ven
 		// sacrificamos las caras posteriores
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_BACK);
+		enableCulling();
 		createProjectionMatrix();
 		renderer = new EntityRenderer(shader, projectionMatrix);
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+	}
+	
+	/**
+	 * Método que activará las caras de las entidades con textura con transparencia
+	 */
+	public static void enableCulling() {
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
+	}
+	
+	public static void disableCulling() {
+		GL11.glDisable(GL11.GL_CULL_FACE);
 	}
 	
 	/**
@@ -71,11 +89,13 @@ public class MasterRenderer {
 	public void render(Light sol, Camara camara) {
 		prepare();
         shader.start();
+        shader.loadCieloColor(RED, GREEN, BLUE);
         shader.loadLuz(sol);
         shader.loadViewMatrix(camara);
         renderer.render(entidades);
         shader.stop();
         terrainShader.start();
+        terrainShader.loadCieloColor(RED, GREEN, BLUE);
         terrainShader.loadLuz(sol);
         terrainShader.loadViewMatrix(camara);
         terrainRenderer.render(terrains);
@@ -126,7 +146,7 @@ public class MasterRenderer {
 	public void prepare() {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glClearColor(0, 0.0f, 0.0f, 1);
+		GL11.glClearColor(RED, GREEN, BLUE, 1);
 	}
 	
 	/**

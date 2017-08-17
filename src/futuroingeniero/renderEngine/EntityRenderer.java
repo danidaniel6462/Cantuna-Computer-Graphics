@@ -80,6 +80,13 @@ public class EntityRenderer {
 		GL20.glEnableVertexAttribArray(2);
 		
 		ModelTexture texture = model.getTexture();
+		
+		// comprobamos si la textura tiene transparecia,
+		// Si es verdadero deshabilitamos el sacrificio de las caras de la entidad
+		if(texture.isTieneTransparencia()) {
+			MasterRenderer.disableCulling();
+		}
+		shader.loadFalsaIluminacionVariable(texture.isUsaFalsaIluminacion());		
 		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
 		// activamos el uso de texturas en el videojuego
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -91,6 +98,8 @@ public class EntityRenderer {
 	 * Método que desenlaza la textura del modelo
 	 */
 	private void unbindTextureModel() {
+		// activamos el sacrificio de las caras posteriores de las entidades, es decir las caras que no se ven
+		MasterRenderer.enableCulling();
 		// desactivamos los atributos usados del VAO
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);

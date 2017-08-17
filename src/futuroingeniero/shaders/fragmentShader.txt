@@ -4,6 +4,7 @@ in vec2 pass_textureCoords;
 in vec3 surfaceNormal; 
 in vec3 toLightVector;
 in vec3 toCameraVector;
+in float visibilidad;
 
 out vec4 salida_Color;
 
@@ -11,6 +12,8 @@ uniform sampler2D muestreoTextura;
 uniform vec3 luzColor;
 uniform float shineDamper;
 uniform float reflectivity; 
+// vec3 uniforme ya que a futuro será necesario ya que cambiaremos el día a la noche
+uniform vec3 cieloColor;
 
 void main(void){
 
@@ -35,16 +38,26 @@ void main(void){
 	float damperFactor = pow(specularFactor, shineDamper);
 	vec3 finalSpecular = damperFactor * reflectivity * luzColor;
 	
-	// el color depende de los atributos que se den a los objetos
-	// el color final solo es una textura 
 	
-	// salida_Color = texture(muestreoTextura, pass_textureCoords);
+	vec4 textureColor = texture(muestreoTextura, pass_textureCoords);
+	// comprobamos el valor del alpha de las texturas para poder realizar la transparencia
+	// si el valor es menor que 0.5 despresiamos ese dato y renderizamos la textura sin el canal alpha
+	if(textureColor.a < 0.5) {
+		discard;
+	}
+
+	// el color depende de los atributos que se den a los objetos
+	
+	// el color final solo es una textura 
+	// salida_Color = textureColor;
 	
 	// color de salida, multiplicando la luz difusa con la textura del modelo
-	// salida_Color = vec4(diffuse, 1.0) * texture(muestreoTextura, pass_textureCoords);
+	// salida_Color = vec4(diffuse, 1.0) * textureColor;
 	
 	// el color de salida es el final con un material que da brillo al objeto 
-	salida_Color = vec4(diffuse, 1.0) * texture(muestreoTextura, pass_textureCoords) + vec4(finalSpecular, 1.0);
+	salida_Color = vec4(diffuse, 1.0) * textureColor + vec4(finalSpecular, 1.0);
+	// mezclamos el color del cielo con el color final anterior y el cálculo de la visibilidad
+	salida_Color = mix(vec4(cieloColor, 1.0), salida_Color, visibilidad);
 	
 	
 }

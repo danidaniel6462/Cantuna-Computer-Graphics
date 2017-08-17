@@ -36,7 +36,6 @@
 				uniform vec3 positionLight; una vez que tenemos el color del sol se debe ubicar la posición del mismo
 										por ejemplo en la vida real el sol varía por cada hora en la mañana, así entoces se puede
 										representar que el sol sale del este y se oculta en el oeste o que simplemente está a una hora determinada
-
 */
 
 
@@ -52,16 +51,23 @@ out vec2 pass_textureCoords;
 out vec3 surfaceNormal;
 out vec3 toLightVector;
 out vec3 toCameraVector; 
+out float visibilidad;
 
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform vec3 luzPosicion;
 
+// densidad de la niebla
+const float density = 0.005;
+// gradiente de niebla
+const float gradient = 5.0;
+
 void main(void){
 
 	vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
-	gl_Position = projectionMatrix * viewMatrix * worldPosition;
+	vec4 positionRelativeToCam = viewMatrix * worldPosition;
+	gl_Position = projectionMatrix * positionRelativeToCam;
 	pass_textureCoords = textureCoords * 40;
 	
 	// calculamos las normales de cada superficie del modelo
@@ -70,29 +76,12 @@ void main(void){
 	surfaceNormal = (transformationMatrix * vec4(normal, 0.0)).xyz;
 	toLightVector = luzPosicion - worldPosition.xyz;
 	toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
+
+	// distancia de un vértice a la cámara para poder calcular la densidad de la niebla
+	float distancia = length(positionRelativeToCam.xyz);
+	// fórmula para calcular la visibilidad de un objeto en el mundo
+	visibilidad = exp(-pow((distancia * density), gradient));
+	// el resultado de la visibilidad está entre 0 y 1 utilizamos la función clamp para calcular todos los valores entre 0 y 1
+	visibilidad = clamp(visibilidad, 0.0, 1.0);
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

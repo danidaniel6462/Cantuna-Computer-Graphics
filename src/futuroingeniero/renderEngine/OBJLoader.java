@@ -32,7 +32,7 @@ public class OBJLoader {
 	 * @return obtenemos un modelo listo y agregado al VAO para poder renderizar en el escenario
 	 */
 	public static RawModel loadObjModel(String fileName, Loader loader) {
-		// ccreamos una variable para leer un archivo
+		// creamos una variable para leer un archivo
 		FileReader fr = null;
 		try {
 			// indicamos la ruta del archivo con su respectiva extensión
@@ -107,7 +107,7 @@ public class OBJLoader {
 				processVertex(vertex1, indices, textures, normals, textureArray, normalsArray);
 				processVertex(vertex2, indices, textures, normals, textureArray, normalsArray);
 				processVertex(vertex3, indices, textures, normals, textureArray, normalsArray);
-				// se lle una línea nueva del archivo .onj
+				// se lee una línea nueva del archivo .onj
 				line = reader.readLine();
 			}
 			// cerramos el lector una vez que ya se llegó al final del archivo .obj

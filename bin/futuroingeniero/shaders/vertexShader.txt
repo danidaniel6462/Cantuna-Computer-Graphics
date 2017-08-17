@@ -52,24 +52,47 @@ out vec2 pass_textureCoords;
 out vec3 surfaceNormal;
 out vec3 toLightVector;
 out vec3 toCameraVector; 
+out float visibilidad;
 
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform vec3 luzPosicion;
 
+uniform float usaFalsaIluminacion;
+
+// densidad de la niebla
+const float density = 0.005;
+// gradiente de niebla
+const float gradient = 5.0;
+
 void main(void){
 
 	vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
-	gl_Position = projectionMatrix * viewMatrix * worldPosition;
+	vec4 positionRelativeToCam = viewMatrix * worldPosition;
+	gl_Position = projectionMatrix * positionRelativeToCam;
 	pass_textureCoords = textureCoords;
+	
+	// guardamos la normal real del objeto
+	vec3 realNormal = normal;
+	
+	if(usaFalsaIluminacion > 0.5){
+		realNormal = vec3(0.0, 1.0, 0.0);
+	}
 	
 	// calculamos las normales de cada superficie del modelo
 	// para esto debemos tomar en cuanta que debemos multiplicar por la transformationMatrix, ya que nuestro modelo va a moverse dentro del espacio
 	// finalmente al realizar la operación debemos devolver valores xyz para poder realizar los cálculos en el fragmentShader
-	surfaceNormal = (transformationMatrix * vec4(normal, 0.0)).xyz;
+	surfaceNormal = (transformationMatrix * vec4(realNormal, 0.0)).xyz;
 	toLightVector = luzPosicion - worldPosition.xyz;
 	toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
+	
+	// distancia de un vértice a la cámara para poder calcular la densidad de la niebla
+	float distancia = length(positionRelativeToCam.xyz);
+	// fórmula para calcular la visibilidad de un objeto en el mundo
+	visibilidad = exp(-pow((distancia * density), gradient));
+	// el resultado de la visibilidad está entre 0 y 1 utilizamos la función clamp para calcular todos los valores entre 0 y 1
+	visibilidad = clamp(visibilidad, 0.0, 1.0);
 	
 }
 

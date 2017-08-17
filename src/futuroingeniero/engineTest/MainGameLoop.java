@@ -16,6 +16,8 @@ import futuroingeniero.entities.Entity;
 import futuroingeniero.entities.Light;
 import futuroingeniero.models.RawModel;
 import futuroingeniero.models.TexturedModel;
+import futuroingeniero.objConverter.ModelData;
+import futuroingeniero.objConverter.OBJFileLoader;
 import futuroingeniero.renderEngine.DisplayManager;
 import futuroingeniero.renderEngine.Loader;
 import futuroingeniero.renderEngine.MasterRenderer;
@@ -49,17 +51,28 @@ public class MainGameLoop {
 		// objeto para cargar los modelos en memoria para posteriormente ser renderizados
 		Loader loader = new Loader();
 		
+		ModelData treeData = OBJFileLoader.loadOBJ("tree");
+		ModelData stallData = OBJFileLoader.loadOBJ("stall");
+		ModelData cubeData = OBJFileLoader.loadOBJ("cubo");
+		ModelData gabyData = OBJFileLoader.loadOBJ("gaviOta");
+		
 		// carga de los modelos 3D dentro del escenario 
-		RawModel model = OBJLoader.loadObjModel("gaby", loader);
-		RawModel modelStall = OBJLoader.loadObjModel("stall", loader);
-		RawModel cuboModel = OBJLoader.loadObjModel("cubo", loader);
-		RawModel arbolModel = OBJLoader.loadObjModel("tree", loader);
+		RawModel stallModel = loader.loadToVAO(stallData.getVertices(), stallData.getTextureCoords(), stallData.getNormals(), stallData.getIndices());
+		RawModel arbolModel = loader.loadToVAO(treeData.getVertices(), treeData.getTextureCoords(), treeData.getNormals(), treeData.getIndices());
+		RawModel cuboModel = loader.loadToVAO(cubeData.getVertices(), cubeData.getTextureCoords(), cubeData.getNormals(), cubeData.getIndices());
+		RawModel gabyModel = loader.loadToVAO(gabyData.getVertices(), gabyData.getTextureCoords(), gabyData.getNormals(), gabyData.getIndices());
+
+		RawModel arbolLowpolyModel = OBJLoader.loadObjModel("lowPolyTree", loader);
 		
 		// carga de texturas de cada modelo
-		modeloStatic = new TexturedModel(model, new ModelTexture(loader.loadTexture("gabyTexture")));
-		TexturedModel staticModelStall = new TexturedModel(modelStall, new ModelTexture(loader.loadTexture("stallTexture")));
+		modeloStatic = new TexturedModel(gabyModel, new ModelTexture(loader.loadTexture("gabyTexture")));
+		TexturedModel staticModelStall = new TexturedModel(stallModel, new ModelTexture(loader.loadTexture("stallTexture")));
 		TexturedModel cubo = new TexturedModel(cuboModel, new ModelTexture(loader.loadTexture("BlackColor")));
-		TexturedModel arbolTextura = new TexturedModel(arbolModel , new ModelTexture(loader.loadTexture("tree")));
+		TexturedModel arbolTextura = new TexturedModel(arbolModel, new ModelTexture(loader.loadTexture("tree")));
+		TexturedModel arbolLowPolyTextura = new TexturedModel(arbolLowpolyModel, new ModelTexture(loader.loadTexture("lowPolyTree")));
+		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), new ModelTexture(loader.loadTexture("grassTexture")));
+		TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern", loader), new ModelTexture(loader.loadTexture("fern")));
+		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), new ModelTexture(loader.loadTexture("flower")));
 		
 		ModelTexture textureStall = staticModelStall.getTexture();
 		textureStall.setShineDamper(10);
@@ -68,19 +81,35 @@ public class MainGameLoop {
 		// las entidades son los modelos 3D que cargamos en el escenario
 		Entity entidad = new Entity(modeloStatic, new Vector3f(5, 0, -20), 0, 0, 0, 1);
 		Entity entidadStall = new Entity(staticModelStall, new Vector3f(-5, 0, -20), 0, 0, 0, 1);
-		
+
+		List<Entity> entities = new ArrayList<Entity>();
+		List<Entity> arbolesLowPoly = new ArrayList<Entity>();
 		List<Entity> variosCubos = new ArrayList<Entity>();
-		
 		gaviotas.add(entidad);
-		
 		List<Entity> arboles = new ArrayList<Entity>();
 		
+		 for (int i = 0; i < 1000; i++){
+			 grass.getTexture().setTieneTransparencia(true);
+			 grass.getTexture().setUsaFalsaIluminacion(true);
+			 entities.add(new Entity(grass, new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, 0, 0, 1));
+			 fern.getTexture().setTieneTransparencia(true);
+			 fern.getTexture().setUsaFalsaIluminacion(true);
+			 entities.add(new Entity(fern, new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, 0, 0, 0.6f)); 
+			 flower.getTexture().setTieneTransparencia(true);
+			 flower.getTexture().setUsaFalsaIluminacion(true);
+			 entities.add(new Entity(flower, new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, 0, 0, 1f)); 
+		 }
+		 
 		Random random = new Random();
 		
 		// árboles
 		for (int i = 0; i < 500; i++) {
 			arboles.add(new Entity(arbolTextura,
 					new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, 0, 0, 3));
+		}
+		for (int i = 0; i < 200; i++) {
+			arbolesLowPoly.add(new Entity(arbolLowPolyTextura,
+					new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, 0, random.nextFloat() * 360, 0.5f));
 		}
 		
 		// cubos
@@ -106,6 +135,7 @@ public class MainGameLoop {
 		while(!Display.isCloseRequested()) {
 			// game logic
 			entidad.increaseRotation(0, 1, 0);
+			entidadStall.increaseRotation(0, 1, 0);
 			camera.movimiento();
 			
 			renderer.procesarTerreno(terreno);
@@ -116,11 +146,17 @@ public class MainGameLoop {
 
 			crearEntidad();
 			
-			
+			for (Entity entidad1 : entities) {
+				renderer.procesarEntidad(entidad1);
+			}			  
 			// árboles
 			for (Entity arbol : arboles) {
 				renderer.procesarEntidad(arbol);
 				arbol.increaseRotation(0, 1, 0);
+			}
+						
+			for (Entity arbol : arbolesLowPoly) {
+				renderer.procesarEntidad(arbol);
 			}
 			// cubos
 			for (Entity cube : variosCubos) {

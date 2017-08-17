@@ -4,6 +4,7 @@
 package futuroingeniero.shaders;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 import futuroingeniero.entities.Camara;
 import futuroingeniero.entities.Light;
@@ -31,6 +32,7 @@ public class TerrainShader extends ShaderProgram {
 	private int location_luzPosicion;
 	private int location_shineDamper;
 	private int location_reflectivity;
+	private int location_cieloColor;
 	
 	/**
 	 * Constructor sin parámetros que recibe la ruta de los archivos Shader.txt
@@ -66,9 +68,24 @@ public class TerrainShader extends ShaderProgram {
 		location_luzPosicion = super.getUniformLocation("luzPosicion");
 		location_shineDamper = super.getUniformLocation("shineDamper");
 		location_reflectivity = super.getUniformLocation("reflectivity");
+		location_cieloColor = super.getUniformLocation("cieloColor");
 	}
 	
+	/**
+	 * Método para cargar el color del cielo
+	 * @param r variable para el canal rojo
+	 * @param g variable para el canal verde
+	 * @param b variable para el canal azul
+	 */
+	public void loadCieloColor(float r, float g, float b){
+		super.loadVector(location_cieloColor, new Vector3f(r, g, b));
+	}
 	
+	/**
+	 * Método que carga los valores de brillo en la entidad 3D
+	 * @param damper variable de amortiguamiento en el objeto 3D, cuánta cantidad de brillo recibe el objeto
+	 * @param refleccion variable para el reflejo del brillo
+	 */
 	public void loadShineVariables(float damper, float refleccion) {
 		super.loadFloat(location_shineDamper, damper);
 		super.loadFloat(location_reflectivity, refleccion);

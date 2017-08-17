@@ -1,6 +1,7 @@
 package futuroingeniero.shaders;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 import futuroingeniero.entities.Camara;
 import futuroingeniero.entities.Light;
@@ -18,6 +19,12 @@ public class StaticShader extends ShaderProgram{
 	 * @param VERTEX_FILE archivo que contiene los cálculos para los VertexSahder
 	 * @param FRAGMENT_FILE archivo que contiene los cálculos para los FragmentShader, para cada pixel
 	 * @param location_transformationMatrix guarda la ubicación de la matriz uniforme en un entero para poder ser llamado
+	 * 
+	 * <h1>Pasos para utilizar esta clase con los Shader.txt</h1>
+	 * 
+	 * 1. Creación de un int que será el identificador para la variable del vertexShader
+	 * 2. En el método getAllUniformLocation(), se instancia el identificador con la variable del VertexShader.txt, <b>NOTA: </b>la referencia al valor de la variable uniforme en el vertexShader tiene que estar correctamente escrita para no tener problemdas de referencia y así funcione lo que queremos representar con el archivo VertexShader 
+	 * 3. Se crea un método para cargar los datos del CPU para el archivo VertexShader
 	 */
 	
 	private static final String VERTEX_FILE = "src/futuroingeniero/shaders/vertexShader.txt";
@@ -30,6 +37,8 @@ public class StaticShader extends ShaderProgram{
 	private int location_luzPosicion;
 	private int location_shineDamper;
 	private int location_reflectivity;
+	private int location_usaFalsaIluminacion;
+	private int location_cieloColor;
 	
 	/**
 	 * Constructor sin parámetros que recibe la ruta de los archivos Shader.txt
@@ -65,9 +74,34 @@ public class StaticShader extends ShaderProgram{
 		location_luzPosicion = super.getUniformLocation("luzPosicion");
 		location_shineDamper = super.getUniformLocation("shineDamper");
 		location_reflectivity = super.getUniformLocation("reflectivity");
+		location_usaFalsaIluminacion = super.getUniformLocation("usaFalsaIluminacion");
+		location_cieloColor = super.getUniformLocation("cieloColor");
 	}
 	
+	/**
+	 * Método para cargar el color del cielo
+	 * @param r variable para el canal rojo
+	 * @param g variable para el canal verde
+	 * @param b variable para el canal azul
+	 */
+	public void loadCieloColor(float r, float g, float b){
+		super.loadVector(location_cieloColor, new Vector3f(r, g, b));
+	}
 	
+	/**
+	 * Método que carga el valor lógico para determinar si se usa falsa iluminación 
+	 * @param usarFalso valor lógico 
+	 */
+	public void loadFalsaIluminacionVariable(boolean usarFalso) {
+		super.loadBoolean(location_usaFalsaIluminacion, usarFalso);
+		
+	}
+	
+	/**
+	 * Método que carga los valores de brillo en la entidad 3D
+	 * @param damper variable de amortiguamiento en el objeto 3D, cuánta cantidad de brillo recibe el objeto
+	 * @param refleccion variable para el reflejo del brillo
+	 */
 	public void loadShineVariables(float damper, float refleccion) {
 		super.loadFloat(location_shineDamper, damper);
 		super.loadFloat(location_reflectivity, refleccion);

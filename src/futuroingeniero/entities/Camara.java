@@ -17,13 +17,13 @@ public class Camara {
 	/**
 	 * Variables nombradas según la cinematográfica
 	 * @param position variable que incializa la posición de la cámara en el mundo
-	 * @param paneo variable para la rotación en X
 	 * @param picado variable para la rotación en Y
+	 * @param paneo variable para la rotación en X
 	 * @param roll variable para la rotación en Z
 	 */
 	private Vector3f posicion = new Vector3f(0, 5, 0);
-	private float paneo;  // pitch
-	private float picado; // yaw
+	private float picado;  // pitch
+	private float paneo; // yaw
 	private float roll; // roll
 	
 	private float speed;
@@ -38,67 +38,65 @@ public class Camara {
 	
 	public void move()
 	{
+		paneo =  - (Display.getWidth() - Mouse.getX() / 2);
+		picado =  (Display.getHeight() / 2) - Mouse.getY();
 		
-		picado =  - (Display.getWidth() - Mouse.getX() / 2);
-		paneo =  (Display.getHeight() / 2) - Mouse.getY();
-		
-		if (paneo >= 90)
+		if (picado >= 90)
 		{
-			
-			paneo = 90;
-			
+			picado = 90;	
 		}
-		else if (paneo <= -90)
+		else if (picado <= -90)
 		{
-			
-			paneo = -90;
-			
+			picado = -90;
 		}
 		
 		if (Keyboard.isKeyDown(Keyboard.KEY_W))
 		{
-
-			posicion.z += -(float)Math.cos(Math.toRadians(picado)) * speed;
-			posicion.x += (float)Math.sin(Math.toRadians(picado)) * speed;
-			
+			posicion.z += -(float)Math.cos(Math.toRadians(paneo)) * speed;
+			posicion.x += (float)Math.sin(Math.toRadians(paneo)) * speed;	
 		}
 		else if (Keyboard.isKeyDown(Keyboard.KEY_S))
 		{
-			posicion.z -= -(float)Math.cos(Math.toRadians(picado)) * speed;
-			posicion.x -= (float)Math.sin(Math.toRadians(picado)) * speed;
-
-
+			posicion.z -= -(float)Math.cos(Math.toRadians(paneo)) * speed;
+			posicion.x -= (float)Math.sin(Math.toRadians(paneo)) * speed;
 		}
 
 		if (Keyboard.isKeyDown(Keyboard.KEY_D))
-		{
-			
-			posicion.z += (float)Math.sin(Math.toRadians(picado)) * speed;
-			posicion.x += (float)Math.cos(Math.toRadians(picado)) * speed;
-
+		{	
+			posicion.z += (float)Math.sin(Math.toRadians(paneo)) * speed;
+			posicion.x += (float)Math.cos(Math.toRadians(paneo)) * speed;
 		}
 		else if (Keyboard.isKeyDown(Keyboard.KEY_A))
-		{
-			
-			posicion.z -= (float)Math.sin(Math.toRadians(picado)) * speed;
-			posicion.x -= (float)Math.cos(Math.toRadians(picado)) * speed;
-
+		{	
+			posicion.z -= (float)Math.sin(Math.toRadians(paneo)) * speed;
+			posicion.x -= (float)Math.cos(Math.toRadians(paneo)) * speed;
 		}
-		
 	}
 	
 	public void movimiento() {
 		if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
-			posicion.z -= 0.5f;
+			posicion.z -= speed;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
-			posicion.x += 0.5f;
+			posicion.x += speed;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
-			posicion.x -= 0.5f;
+			posicion.x -= speed;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			posicion.z += 0.5f;
+			posicion.z += speed;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_E)) {
+			posicion.y += speed;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_Q)) {
+			posicion.y -= speed;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_Z)) {
+			picado += speed;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_C)) {
+			picado -= speed;
 		}
 	}
 
@@ -110,17 +108,17 @@ public class Camara {
 	}
 
 	/**
-	 * @return the paneo
-	 */
-	public float getPaneo() {
-		return paneo;
-	}
-
-	/**
 	 * @return the picado
 	 */
 	public float getPicado() {
 		return picado;
+	}
+
+	/**
+	 * @return the paneo
+	 */
+	public float getPaneo() {
+		return paneo;
 	}
 
 	/**

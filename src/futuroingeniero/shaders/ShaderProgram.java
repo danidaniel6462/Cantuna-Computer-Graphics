@@ -75,6 +75,16 @@ public abstract class ShaderProgram {
 	}
 	
 	/**
+	 * Método para ubicar de forma más simple la variable Uniforme por medio de flotantes
+	 * Método para cargar datos enteros (Int) dentro de los archivos Shaders
+	 * @param location entero que representa la ubicación de la variable Uniforme
+	 * @param value el tipo de Variable Uniforme
+	 */
+	protected void loadInt(int location, int value) {
+		GL20.glUniform1i(location, value);
+	}
+	
+	/**
 	 *  Método para cargar vectores 3D dentro de los archivos Shaders
 	 * @param location
 	 * @param vector

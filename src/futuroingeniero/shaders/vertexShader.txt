@@ -62,7 +62,7 @@ uniform vec3 luzPosicion;
 uniform float usaFalsaIluminacion;
 
 // densidad de la niebla
-const float density = 0.005;
+const float density = 0.0035;
 // gradiente de niebla
 const float gradient = 5.0;
 

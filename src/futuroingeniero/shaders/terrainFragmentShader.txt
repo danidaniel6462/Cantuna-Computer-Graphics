@@ -8,7 +8,21 @@ in float visibilidad;
 
 out vec4 salida_Color;
 
-uniform sampler2D muestreoTextura;
+/* texturas:
+	
+	- fondo general del plano
+	- variable epara obtener el color rojo del blendMap
+	- variable epara obtener el color green del blendMap
+	- variable epara obtener el color blue del blendMap
+	- la textura mezclada (BlendMap) 
+	
+*/
+uniform sampler2D backgroundTexture;
+uniform sampler2D rTexture;
+uniform sampler2D gTexture;
+uniform sampler2D bTexture;
+uniform sampler2D blendMap;
+
 uniform vec3 luzColor;
 uniform float shineDamper;
 uniform float reflectivity; 
@@ -16,6 +30,23 @@ uniform float reflectivity;
 uniform vec3 cieloColor;
 
 void main(void){
+
+	// variable que nos dirá que cantidad de cada textura tomará para realizar la mezcla
+	// esta línea crería un mosaico de la textura
+	vec4 blendMapColor = texture(blendMap, pass_textureCoords);
+	// calculamos cuánto del fondo negro queremos tener en nuestra textura
+	float backTextureAmount = 1 - (blendMapColor.r + blendMapColor.g + blendMapColor.b);
+	vec2 tiledCoords = pass_textureCoords * 40.0;
+	// calculamos el color de todas las baldozas (tiled)
+	vec4 backgroundTextureColor = texture(backgroundTexture, tiledCoords) * backTextureAmount;
+	vec4 rTextureColor = texture(rTexture, tiledCoords) * blendMapColor.r;
+	vec4 gTextureColor = texture(gTexture, tiledCoords) * blendMapColor.g;
+	vec4 bTextureColor = texture(bTexture, tiledCoords) * blendMapColor.b;
+	
+	// finalmente se calcula el color total de la mezcla
+	vec4 totalColor = backgroundTextureColor + rTextureColor + gTextureColor + bTextureColor;
+	
+	
 
 	// normalizamos los vectores surfaceNormal y toLightVector 
 	vec3 unitarioNormal = normalize(surfaceNormal);
@@ -38,7 +69,7 @@ void main(void){
 	float damperFactor = pow(specularFactor, shineDamper);
 	vec3 finalSpecular = damperFactor * reflectivity * luzColor;
 	
-	vec4 textureColor = texture(muestreoTextura, pass_textureCoords);
+	vec4 textureColor = totalColor;
 		
 	// el color depende de los atributos que se den a los objetos
 	// el color final solo es una textura 

@@ -59,7 +59,7 @@ uniform mat4 viewMatrix;
 uniform vec3 luzPosicion;
 
 // densidad de la niebla
-const float density = 0.005;
+const float density = 0.0035;
 // gradiente de niebla
 const float gradient = 5.0;
 
@@ -68,7 +68,7 @@ void main(void){
 	vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
 	vec4 positionRelativeToCam = viewMatrix * worldPosition;
 	gl_Position = projectionMatrix * positionRelativeToCam;
-	pass_textureCoords = textureCoords * 40;
+	pass_textureCoords = textureCoords;
 	
 	// calculamos las normales de cada superficie del modelo
 	// para esto debemos tomar en cuanta que debemos multiplicar por la transformationMatrix, ya que nuestro modelo va a moverse dentro del espacio

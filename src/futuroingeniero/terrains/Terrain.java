@@ -5,7 +5,8 @@ package futuroingeniero.terrains;
 
 import futuroingeniero.models.RawModel;
 import futuroingeniero.renderEngine.Loader;
-import futuroingeniero.textures.ModelTexture;
+import futuroingeniero.textures.TerrainTexture;
+import futuroingeniero.textures.TerrainTexturePack;
 
 /**
  * @author Daniel Loza
@@ -26,7 +27,8 @@ public class Terrain {
 	// modelo del terreno
 	private RawModel model;
 	// textura del terreno
-	private ModelTexture texture;
+	private TerrainTexturePack texturePack;
+	private TerrainTexture blendMap;
 
 	/**
 	 * <b>Constructor de la clase Terrain</b>
@@ -45,8 +47,9 @@ public class Terrain {
 	 * @param texture
 	 *            variable que texturizará el terreno que se crea en esta clase
 	 */
-	public Terrain(int gridX, int gridZ, Loader loader, ModelTexture texture) {
-		this.texture = texture;
+	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texturePack, TerrainTexture blendMap) {
+		this.texturePack = texturePack;
+		this.blendMap = blendMap;
 		this.x = gridX * SIZE;
 		this.z = gridZ * SIZE;
 		this.model = generateTerrain(loader);
@@ -74,10 +77,17 @@ public class Terrain {
 	}
 
 	/**
-	 * @return el texture
+	 * @return el texturePack
 	 */
-	public ModelTexture getTexture() {
-		return texture;
+	public TerrainTexturePack getTexturePack() {
+		return texturePack;
+	}
+
+	/**
+	 * @return el blendMap
+	 */
+	public TerrainTexture getBlendMap() {
+		return blendMap;
 	}
 
 	/**

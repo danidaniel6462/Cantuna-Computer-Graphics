@@ -15,7 +15,7 @@ import org.lwjgl.util.vector.Vector3f;
 import futuroingeniero.models.RawModel;
 import futuroingeniero.shaders.TerrainShader;
 import futuroingeniero.terrains.Terrain;
-import futuroingeniero.textures.ModelTexture;
+import futuroingeniero.textures.TerrainTexturePack;
 import futuroingeniero.toolbox.Maths;
 
 /**
@@ -35,6 +35,7 @@ public class TerrainRenderer {
 		this.shader = shader;
 		shader.start();
 		shader.loadProjectionMatrix(projectionMatrix);
+		shader.conectarUnidadesdTextura();
 		shader.stop();
 	}
 	
@@ -72,12 +73,29 @@ public class TerrainRenderer {
 		GL20.glEnableVertexAttribArray(1);
 		GL20.glEnableVertexAttribArray(2);
 		
-		ModelTexture texture = terrain.getTexture();
-		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
+		bindTextures(terrain);
+		shader.loadShineVariables(1, 0);
+
+	}
+	
+	/**
+	 * Método para mezclar las texturas del terreno, se utilizan 5 texturas diferentes, incluyendo el blendMap.png
+	 * @param terrain 
+	 */
+	public void bindTextures(Terrain terrain) {
+		TerrainTexturePack texturePack = terrain.getTexturePack();
 		// activamos el uso de texturas en el videojuego
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		// vinculamos la textura con una llamada y su Identificación
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getID());
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturePack.getBackgroundTexture().getTextureID());
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturePack.getrTexture().getTextureID());
+		GL13.glActiveTexture(GL13.GL_TEXTURE2);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturePack.getgTexture().getTextureID());
+		GL13.glActiveTexture(GL13.GL_TEXTURE3);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturePack.getbTexture().getTextureID());
+		GL13.glActiveTexture(GL13.GL_TEXTURE4);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrain.getBlendMap().getTextureID());
 	}
 	
 	/**

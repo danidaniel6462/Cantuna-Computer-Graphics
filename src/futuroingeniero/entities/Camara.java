@@ -21,8 +21,8 @@ public class Camara {
 	 * @param paneo variable para la rotación en X
 	 * @param roll variable para la rotación en Z
 	 */
-	private Vector3f posicion = new Vector3f(0, 5, 0);
-	private float picado;  // pitch
+	private Vector3f posicion = new Vector3f(10, 25, 20);
+	private float picado = 20f;  // pitch
 	private float paneo; // yaw
 	private float roll; // roll
 	
@@ -32,7 +32,6 @@ public class Camara {
 	
 	public Camara()
 	{
-		
 		this.speed = 0.5f;
 	}
 	
@@ -73,7 +72,9 @@ public class Camara {
 		}
 	}
 	
-	public void movimiento() {
+	/*
+	 * public void movimiento() {
+	
 		if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			posicion.z -= speed;
 		}
@@ -99,6 +100,9 @@ public class Camara {
 			picado -= speed;
 		}
 	}
+	
+	 */
+	
 
 	/**
 	 * @return the posicion

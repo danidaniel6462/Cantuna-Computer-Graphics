@@ -36,9 +36,9 @@ public class MasterRenderer {
 	private static final float PLANO_CERCANO = 0.1f;
 	private static final float PLANO_LEJANO = 1000f;
 	
-	private static final float RED = 137f / 255f;
-	private static final float GREEN = 200f / 255f;
-	private static final float BLUE = 230f / 255f;
+	private static final float RED = 146f / 255f;
+	private static final float GREEN = 209f / 255f;
+	private static final float BLUE = 188f / 255f;
 	
 	private Matrix4f projectionMatrix;
 	

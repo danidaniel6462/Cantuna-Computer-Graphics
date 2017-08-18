@@ -14,6 +14,7 @@ import org.lwjgl.util.vector.Vector3f;
 import futuroingeniero.entities.Camara;
 import futuroingeniero.entities.Entity;
 import futuroingeniero.entities.Light;
+import futuroingeniero.entities.Player;
 import futuroingeniero.models.RawModel;
 import futuroingeniero.models.TexturedModel;
 import futuroingeniero.objConverter.ModelData;
@@ -71,7 +72,8 @@ public class MainGameLoop {
 		ModelData stallData = OBJFileLoader.loadOBJ("stall");
 		ModelData cubeData = OBJFileLoader.loadOBJ("cubo");
 		ModelData gabyData = OBJFileLoader.loadOBJ("gaviOta");
-
+		ModelData steveData = OBJFileLoader.loadOBJ("steve");
+		
 		// carga de los modelos 3D dentro del escenario
 		RawModel stallModel = loader.loadToVAO(stallData.getVertices(), stallData.getTextureCoords(),
 				stallData.getNormals(), stallData.getIndices());
@@ -81,6 +83,8 @@ public class MainGameLoop {
 				cubeData.getNormals(), cubeData.getIndices());
 		RawModel gabyModel = loader.loadToVAO(gabyData.getVertices(), gabyData.getTextureCoords(),
 				gabyData.getNormals(), gabyData.getIndices());
+		RawModel steveModel = loader.loadToVAO(steveData.getVertices(), steveData.getTextureCoords(),
+				steveData.getNormals(), steveData.getIndices());
 
 		RawModel arbolLowpolyModel = OBJLoader.loadObjModel("lowPolyTree", loader);
 
@@ -98,11 +102,15 @@ public class MainGameLoop {
 				new ModelTexture(loader.loadTexture("fern")));
 		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader),
 				new ModelTexture(loader.loadTexture("flower")));
+		TexturedModel steveTexture = new TexturedModel(steveModel,
+				new ModelTexture(loader.loadTexture("steveTexture")));
 
+		// modelo que obtendrá características de brillo y material
 		ModelTexture textureStall = staticModelStall.getTexture();
 		textureStall.setShineDamper(10);
 		textureStall.setReflectivity(1);
 
+		// características de las texturas
 		grass.getTexture().setTieneTransparencia(true);
 		grass.getTexture().setUsaFalsaIluminacion(true);
 		flower.getTexture().setTieneTransparencia(true);
@@ -112,6 +120,9 @@ public class MainGameLoop {
 		// las entidades son los modelos 3D que cargamos en el escenario
 		Entity entidad = new Entity(modeloStatic, new Vector3f(5, 0, -20), 0, 0, 0, 1);
 		Entity entidadStall = new Entity(staticModelStall, new Vector3f(-5, 0, -20), 0, 0, 0, 1);
+		
+		// Player del videojuego 
+		Player player = new Player(steveTexture, new Vector3f(10, 0, -50), 0, 0, 0, 1);
 
 		List<Entity> entities = new ArrayList<Entity>();
 		List<Entity> arbolesLowPoly = new ArrayList<Entity>();
@@ -119,14 +130,14 @@ public class MainGameLoop {
 		gaviotas.add(entidad);
 		List<Entity> arboles = new ArrayList<Entity>();
 
-		for (int i = 0; i < 1000; i++) {
-			if (i % 7 == 0) {
+		for (int i = 0; i < 6000; i++) {
+			if (i % 3 == 0) {
 				entities.add(new Entity(flower,
 						new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, 0, 0, 1f));
 				entities.add(new Entity(grass,
 						new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, 0, 0, 1));
 			}
-			if (i % 3 == 0) {
+			if (i % 7 == 0) {
 				entities.add(new Entity(fern,
 						new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, 0, 0, 0.6f));
 			}
@@ -162,22 +173,24 @@ public class MainGameLoop {
 		Camara camera = new Camara();
 
 		MasterRenderer renderer = new MasterRenderer();
+		
 		// bucle del juego real
 		// donde ocurren todas las actualizaciones
 		while (!Display.isCloseRequested()) {
 			// game logic
 			entidad.increaseRotation(0, 1, 0);
 			entidadStall.increaseRotation(0, 1, 0);
-			camera.movimiento();
+			//camera.movimiento();
+			player.move();
 
 			renderer.procesarTerreno(terreno);
 			renderer.procesarTerreno(terreno2);
-
+			renderer.procesarEntidad(player);
 			// render
 			renderer.render(luz, camera);
 
 			crearEntidad();
-
+			
 			for (Entity entidad1 : entities) {
 				renderer.procesarEntidad(entidad1);
 			}
@@ -225,7 +238,7 @@ public class MainGameLoop {
 					index += 1;
 					System.out.println("index: " + index);
 				}
-				if (Keyboard.getEventKey() == Keyboard.KEY_SPACE) {
+				if (Keyboard.getEventKey() == Keyboard.KEY_RCONTROL) {
 					System.out.println("SPACE Key is pressed");
 					gaviotas.remove(index);
 					System.out.println("Gaviota eliminada num: " + index);
@@ -238,7 +251,7 @@ public class MainGameLoop {
 				if (Keyboard.getEventKey() == Keyboard.KEY_UP) {
 					System.out.println("UP Key Released");
 				}
-				if (Keyboard.getEventKey() == Keyboard.KEY_SPACE) {
+				if (Keyboard.getEventKey() == Keyboard.KEY_RCONTROL) {
 					System.out.println("SPACE Key is Released");
 				}
 			}

@@ -42,7 +42,7 @@ public class MainGameLoop {
 	 *            argumento
 	 */
 
-	// private static float x = 0, y = 0, z = 0;
+	private static float x = 0, y = 0, z = 0;
 	private static int index = 0;
 
 	private static Random random = new Random();
@@ -64,7 +64,8 @@ public class MainGameLoop {
 		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
 
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
-		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("miBlendMap"));
+		TerrainTexture miBlendMap = new TerrainTexture(loader.loadTexture("miBlendMap"));
+		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
 		// *******************************************//
 
@@ -118,16 +119,13 @@ public class MainGameLoop {
 		fern.getTexture().setTieneTransparencia(true);
 
 		// las entidades son los modelos 3D que cargamos en el escenario
-		Entity entidad = new Entity(modeloStatic, new Vector3f(5, 0, -20), 0, 0, 0, 1);
+		Entity gabyEntidad = new Entity(modeloStatic, new Vector3f(10, 0, -20), 0, 0, 0, 1);
 		Entity entidadStall = new Entity(staticModelStall, new Vector3f(-5, 0, -20), 0, 0, 0, 1);
-		
-		// Player del videojuego 
-		Player player = new Player(steveTexture, new Vector3f(10, 0, -50), 0, 0, 0, 1);
 
 		List<Entity> entities = new ArrayList<Entity>();
 		List<Entity> arbolesLowPoly = new ArrayList<Entity>();
 		List<Entity> variosCubos = new ArrayList<Entity>();
-		gaviotas.add(entidad);
+		gaviotas.add(gabyEntidad);
 		List<Entity> arboles = new ArrayList<Entity>();
 
 		for (int i = 0; i < 6000; i++) {
@@ -150,8 +148,8 @@ public class MainGameLoop {
 		}
 		for (int i = 0; i < 200; i++) {
 			arbolesLowPoly.add(new Entity(arbolLowPolyTextura,
-					new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, 0,
-					random.nextFloat() * 360, 0.5f));
+					new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, random.nextFloat() * 360,
+					0, 0.5f));
 		}
 
 		// cubos
@@ -164,13 +162,15 @@ public class MainGameLoop {
 		}
 
 		// creamos una luz en el escenario
-		Light luz = new Light(new Vector3f(200, 200, 100), new Vector3f(1, 1, 1));
+		Light luz = new Light(new Vector3f(2000, 2000, 1000), new Vector3f(1, 1, 1));
 
 		Terrain terreno = new Terrain(-1, -1, loader, texturePack, blendMap);
-		Terrain terreno2 = new Terrain(0, -1, loader, texturePack, blendMap);
+		Terrain terreno2 = new Terrain(0, -1, loader, texturePack, miBlendMap);
 
+		// Player del videojuego 
+		Player player = new Player(steveTexture, new Vector3f(100, 0, -50), 0, 180, 0, 1);
 		// creación de la cámara a utilizar
-		Camara camera = new Camara();
+		Camara camera = new Camara(player);
 
 		MasterRenderer renderer = new MasterRenderer();
 		
@@ -178,9 +178,9 @@ public class MainGameLoop {
 		// donde ocurren todas las actualizaciones
 		while (!Display.isCloseRequested()) {
 			// game logic
-			entidad.increaseRotation(0, 1, 0);
+			gabyEntidad.increaseRotation(0, 1, 0);
 			entidadStall.increaseRotation(0, 1, 0);
-			//camera.movimiento();
+			camera.move();
 			player.move();
 
 			renderer.procesarTerreno(terreno);
@@ -230,7 +230,7 @@ public class MainGameLoop {
 					System.out.println("ENTER KEY IS PRESSED");
 					float x = random.nextFloat() * 100 - 50;
 					float z = random.nextFloat() * -300;
-					gaviotas.add(new Entity(modeloStatic, new Vector3f(x, 0, z), 0, 0, random.nextFloat() * 360, 1f));
+					gaviotas.add(new Entity(modeloStatic, new Vector3f(x, 0, z), 0, random.nextFloat() * 360, 0, 1f));
 					System.out.println("Array Gaviotas tamaño: " + gaviotas.size());
 				}
 				if (Keyboard.getEventKey() == Keyboard.KEY_UP) {
@@ -238,6 +238,16 @@ public class MainGameLoop {
 					index += 1;
 					System.out.println("index: " + index);
 				}
+				if (Keyboard.getEventKey() == Keyboard.KEY_X) {
+					x += 0.1f;
+				}
+				if (Keyboard.getEventKey() == Keyboard.KEY_Y) {
+					y += 0.1f;
+				}
+				if (Keyboard.getEventKey() == Keyboard.KEY_Z) {
+					z += 0.1f;
+				}
+				
 				if (Keyboard.getEventKey() == Keyboard.KEY_RCONTROL) {
 					System.out.println("SPACE Key is pressed");
 					gaviotas.remove(index);

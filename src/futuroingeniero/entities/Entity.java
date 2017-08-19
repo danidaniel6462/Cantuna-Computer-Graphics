@@ -36,7 +36,7 @@ public class Entity {
 		this.position = position;
 		this.rotX = rotX;
 		this.rotY = rotY;
-		this.rotY = rotZ;
+		this.rotZ = rotZ;
 		this.scale = scale;
 	}
 	

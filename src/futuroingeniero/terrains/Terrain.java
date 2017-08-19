@@ -18,7 +18,7 @@ public class Terrain {
 	 * @value #STATIC_FIELD VERTEX_COUNT constante que determina el número de
 	 *        vértices a lo largo de cada lado del terreno
 	 */
-	private static final float SIZE = 800;
+	private static final float SIZE = 1000;
 	private static final int VERTEX_COUNT = 128;
 
 	// variables para determinar la posición del terreno

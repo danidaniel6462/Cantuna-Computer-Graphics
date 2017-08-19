@@ -17,12 +17,15 @@ import futuroingeniero.renderEngine.DisplayManager;
  */
 public class Player extends Entity{
 
-	private static final float RUN_SPEED = 20; // velocidad de correr
+	private static final float WALK_SPEED = 20; // velocidad de correr
 	private static final float TURN_SPEED = 160; // Velocidad de giro
-	private static final float GRAVITY = -50; // varibale para simular gravedad en el juego
+	private static final float GRAVITY = -80; // varibale para simular gravedad en el juego
 	private static final float JUMP_POWER = 30; // poder del salto del jugador
+	private static final float RUN_SPEED = 30; // v del salto del jugador
 	
 	private static final float TERRAIN_HEIGHT = 0; // altura del terreno con el que colisionará el jugador
+	private static final float TERRAIN_DEPTH = -1000; // profundidad del terreno creado para poder colisionar con el borde
+	private static final float TERRAIN_WIDE = 1000; // ancho del terreno creado para poder colisionar con el borde
 	
 	private float currentSpeed = 0; // velocidad actual del jugador incializado en 0 ya que no se mueve
 	private float currenTurnSpeed = 0; // velocidad de la rotación del jugador inicializado en 0 ya que no se mueve
@@ -76,6 +79,19 @@ public class Player extends Entity{
 			isInAir = false;
 			super.getPosition().y = TERRAIN_HEIGHT;
 		}
+		
+		// colisión con los bordes del terreno
+		if(super.getPosition().z > TERRAIN_DEPTH - TERRAIN_DEPTH) { 
+			super.setPosition(new Vector3f(super.getPosition().x, super.getPosition().y, 0));
+		} else if(super.getPosition().z < TERRAIN_DEPTH) {
+			super.setPosition(new Vector3f(super.getPosition().x, super.getPosition().y, TERRAIN_DEPTH));
+		} 
+		
+		if(super.getPosition().x > TERRAIN_WIDE) { 
+			super.setPosition(new Vector3f(TERRAIN_WIDE, super.getPosition().y, super.getPosition().z));
+		} else if(super.getPosition().x < -TERRAIN_WIDE) {
+			super.setPosition(new Vector3f(-TERRAIN_WIDE, super.getPosition().y, super.getPosition().z));
+		} 
 	}
 	
 	/**
@@ -100,19 +116,29 @@ public class Player extends Entity{
 	 */
 	private void checkInput() {
 		if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
-			this.currentSpeed = RUN_SPEED;
+			this.currentSpeed = WALK_SPEED;
 		} else if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			this.currentSpeed = -RUN_SPEED;
+			this.currentSpeed = -WALK_SPEED;
 		} else {
 			this.currentSpeed = 0;
 		}
-		
+
 		if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
 			this.currenTurnSpeed = -TURN_SPEED;
 		} else if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
 			this.currenTurnSpeed = TURN_SPEED;
 		} else {
 			this.currenTurnSpeed = 0;
+		}
+		
+		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+			if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
+				this.currentSpeed = WALK_SPEED + RUN_SPEED;
+			} else if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
+				this.currentSpeed = -WALK_SPEED - RUN_SPEED;
+			} else {
+				this.currentSpeed = 0;
+			}
 		}
 		
 		if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {

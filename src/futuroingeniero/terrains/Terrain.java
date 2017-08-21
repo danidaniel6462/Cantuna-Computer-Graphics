@@ -3,10 +3,20 @@
  */
 package futuroingeniero.terrains;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
+
 import futuroingeniero.models.RawModel;
 import futuroingeniero.renderEngine.Loader;
 import futuroingeniero.textures.TerrainTexture;
 import futuroingeniero.textures.TerrainTexturePack;
+import futuroingeniero.toolbox.Maths;
 
 /**
  * @author Daniel Loza
@@ -18,9 +28,12 @@ public class Terrain {
 	 * @value #STATIC_FIELD VERTEX_COUNT constante que determina el número de
 	 *        vértices a lo largo de cada lado del terreno
 	 */
-	private static final float SIZE = 1000;
-	private static final int VERTEX_COUNT = 128;
-
+	private static final float SIZE = 800; // Tamaño del terreno
+	private static final float MAX_HEIGHT = 40; // máxima altura del terreno
+	// se multiplica 256, 3 veces ya que son el color de cada píxel del terreno
+	// y los colores estan entre 0 y 255, total 256, por cada canal RGB, serían 256 * 256 * 256
+	private static final float MAX_PIXEL_COLOR = 256 * 256 * 256;
+																
 	// variables para determinar la posición del terreno
 	private float x;
 	private float z;
@@ -30,6 +43,8 @@ public class Terrain {
 	private TerrainTexturePack texturePack;
 	private TerrainTexture blendMap;
 
+	private float[][] heights;
+	
 	/**
 	 * <b>Constructor de la clase Terrain</b>
 	 * 
@@ -47,12 +62,13 @@ public class Terrain {
 	 * @param texture
 	 *            variable que texturizará el terreno que se crea en esta clase
 	 */
-	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texturePack, TerrainTexture blendMap) {
+	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texturePack, 
+			TerrainTexture blendMap, String heightMap) {
 		this.texturePack = texturePack;
 		this.blendMap = blendMap;
 		this.x = gridX * SIZE;
 		this.z = gridZ * SIZE;
-		this.model = generateTerrain(loader);
+		this.model = generateTerrain(loader, heightMap);
 	}
 
 	/**
@@ -89,15 +105,78 @@ public class Terrain {
 	public TerrainTexture getBlendMap() {
 		return blendMap;
 	}
+	
+	/**
+	 * Método que obtiene una coordenada X, Z y devuelve la coordenada en Y 
+	 * que será la altura del terreno en ese punto
+	 * @param worldX posición en X del terreno en el espacio del videojuego
+	 * @param worldZ posición en Z del terreno en el espacio del videojuego  
+	 * @return devvuelve la coordenada en Y que será la altura del terreno en el punto X, Z
+	 */
+	public float getHeighOfTerrain(float worldX, float worldZ) {
+		// convertimos las posiciones del las coordenadas del mundo en coordenadas del terreno
+		float terrainX = worldX - this.x;
+		float terrainZ = worldZ - this.z;
+		// calculamos el tamaño de cada cuadrado que tiene el terreno
+		float gridSquareSize = SIZE / (float) (heights.length - 1);
+		// averiguamos en qué cuadrícula está el jugador con las posiciones en x, z para el terreno
+		// utilizamos la función floor obtener solo el valor entero de la división
+		// por ejemplo:
+		// (13, 8) coordenadas del personaje sobre el terreno
+		// (13, 8) / 5 = (2.6, 1.6) dividimos para 5, que es el tamaño de cada regilla (grid)
+		// floor(2.6, 1.6), obtenemos el valor entero de los número ingresados y obtenemos
+		// (2, 1) que sería la posición del cuadrada en el terreno
+		int gridX = (int) Math.floor(terrainX / gridSquareSize);
+		int gridZ = (int) Math.floor(terrainZ / gridSquareSize);
+		// calculamos si el valor de griX y griZ de verdad están en una cuadrícula válida del terreno
+		if(gridX >= heights.length - 1 || gridZ >= heights.length - 1 || gridX < 0 || gridZ < 0) {
+			// devolvemos la altura para el jugador sea cero
+			return 0;
+		}
+		// si el jugador está en la cuadricula calculamos la posición del jugador
+		// para realizarlo utilizamos el módulo para calcular la distancia del jugador desde la esquina superior izquierda
+		float xCoord = (terrainX % gridSquareSize) / gridSquareSize;
+		float zCoord = (terrainZ % gridSquareSize) / gridSquareSize;
+		// averiguamos en que lado del triçangulo de cada porción del terreno está el personaje
+		float respuesta;
+		if(xCoord <= (1 - zCoord)) {
+			// calculamos la altura del triángulo en la posición que está el jugador 
+			respuesta = Maths.
+					barryCentric(new Vector3f(0, heights[gridX][gridZ], 0), new Vector3f(1,
+							heights[gridX + 1][gridZ], 0), new Vector3f(0,
+							heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, zCoord));
+		} else {
+			respuesta = Maths
+					.barryCentric(new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(1,
+							heights[gridX + 1][gridZ + 1], 1), new Vector3f(0,
+							heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, zCoord));
+		}
+		return respuesta;
+	}
 
 	/**
-	 * Método para crear el terreno totalmente plano
+	 * Método para crear el terreno con un HeightMap
 	 * 
 	 * @param loader
 	 *            variable para cargar el terreno
+	 * @param heightMap
+	 *            variable para cargar el heightMap del terreno, si no se carga el terreno es plano
 	 * @return un modelo terreno
 	 */
-	private RawModel generateTerrain(Loader loader) {
+	private RawModel generateTerrain(Loader loader, String heightMap) {
+		
+		BufferedImage image = null;
+		try {
+			image = ImageIO.read(new File("res/texturas/" + heightMap + ".png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("\nMI ERROR: Intentó cargar el heightMap " + heightMap + ".png Pero no funcionó\n");
+			System.exit(-1);
+		}
+		
+		int VERTEX_COUNT = image.getHeight();
+		heights = new float [VERTEX_COUNT][VERTEX_COUNT];
+		
 		int count = VERTEX_COUNT * VERTEX_COUNT;
 		float[] vertices = new float[count * 3];
 		float[] normals = new float[count * 3];
@@ -107,11 +186,14 @@ public class Terrain {
 		for (int i = 0; i < VERTEX_COUNT; i++) {
 			for (int j = 0; j < VERTEX_COUNT; j++) {
 				vertices[vertexPointer * 3] = (float) j / ((float) VERTEX_COUNT - 1) * SIZE;
-				vertices[vertexPointer * 3 + 1] = 0;
+				float height = getHeight(j, i, image);
+				heights[j][i] = height;
+				vertices[vertexPointer * 3 + 1] = height;
 				vertices[vertexPointer * 3 + 2] = (float) i / ((float) VERTEX_COUNT - 1) * SIZE;
-				normals[vertexPointer * 3] = 0;
-				normals[vertexPointer * 3 + 1] = 1;
-				normals[vertexPointer * 3 + 2] = 0;
+				Vector3f normal = calcularNormal(j, i, image);
+				normals[vertexPointer * 3] = normal.x;
+				normals[vertexPointer * 3 + 1] = normal.y;
+				normals[vertexPointer * 3 + 2] = normal.z;
 				textureCoords[vertexPointer * 2] = (float) j / ((float) VERTEX_COUNT - 1);
 				textureCoords[vertexPointer * 2 + 1] = (float) i / ((float) VERTEX_COUNT - 1);
 				vertexPointer++;
@@ -133,5 +215,48 @@ public class Terrain {
 			}
 		}
 		return loader.loadToVAO(vertices, textureCoords, normals, indices);
+	}
+	
+	/**
+	 * Método para calcular las normales del terreno para poder recibir de forma correcta las luces del videojuego
+	 * @param x Variable horizontal del heightMap
+	 * @param z Variable de profundidad del heightMap
+	 * @param image imagen del HeightMap
+	 * @return Devuelve un Vector3 del cálculo de las normales para recibir bien las luces
+	 */
+	private Vector3f calcularNormal(int x, int z, BufferedImage image){
+		float heightL = getHeight(x - 1, z, image);
+		float heightR = getHeight(x + 1, z, image);
+		float heightD = getHeight(x, z - 1, image);
+		float heightU = getHeight(x, z + 1, image);
+		Vector3f normal = new Vector3f(heightL-heightR, 2f, heightD - heightU);
+		normal.normalise();
+		return normal;
+	}
+	
+	/**
+	 *  Calculamos la altura del HeightMap y el color de los pìxeles del terreno
+	 * @param x Variable horizontal del heightMap
+	 * @param z Variable de profundidad del heightMap
+	 * @param image imagen del HeightMap
+	 * @return retorna el rango de altura máxima y mínima para el terreno
+	 */
+	private float getHeight(int x, int z, BufferedImage image) {
+		// comprobamos que el heightMap que cargamos esté en el rango que una imagenBuffer
+		if(x < 0 || x >= image.getHeight() || z < 0 || z >= image.getHeight()) {
+			return 0;
+		}
+		float height = image.getRGB(x, z);
+		height += MAX_PIXEL_COLOR / 2f;
+		height /= MAX_PIXEL_COLOR / 2f;
+		height *= MAX_HEIGHT;
+		return height;
+	}
+
+	/**
+	 * @return el size
+	 */
+	public static float getSize() {
+		return SIZE;
 	}
 }

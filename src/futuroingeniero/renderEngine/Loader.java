@@ -4,8 +4,6 @@
 package futuroingeniero.renderEngine;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -13,6 +11,7 @@ import java.util.List;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
@@ -74,14 +73,18 @@ public class Loader {
 		Texture texture = null;
 		try {
 			texture = TextureLoader.getTexture("PNG", new FileInputStream("res/texturas/" + fileName + ".png"));
-		} catch (FileNotFoundException e) {
+			// generamos la resolución más baja de una textura 
+			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+			// Generamos los parámetros de textura
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -0.4f);
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("\nMI ERROR: Intentó cargar la textura " + fileName + ".png Pero no funcionó\n");
+			System.exit(-1);
 		}
-		int textureID = texture.getTextureID();
-		textures.add(textureID);
-		return textureID;
+		textures.add(texture.getTextureID());
+		return texture.getTextureID();
 	}
 	
 	/**

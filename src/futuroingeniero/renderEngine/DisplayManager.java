@@ -45,6 +45,7 @@ public class DisplayManager {
 			Display.create(new PixelFormat(), attribs);
 			//Display.create();
 			Display.setTitle("Cantuña LWJGL Versión " + org.lwjgl.Sys.getVersion());
+			// Display.setParent(Editor.miCanvasOpenGL);
 			
 		} catch (LWJGLException e) {
 			e.printStackTrace();

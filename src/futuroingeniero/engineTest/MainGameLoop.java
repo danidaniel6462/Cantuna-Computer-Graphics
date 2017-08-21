@@ -35,21 +35,15 @@ import futuroingeniero.textures.TerrainTexturePack;
 
 public class MainGameLoop {
 
-	/**
-	 * Método principal que se ejecuta para iniciar la aplicación
-	 * 
-	 * @param args
-	 *            argumento
-	 */
-
-	private static float x = 0, y = 0, z = 0;
 	private static int index = 0;
 
 	private static Random random = new Random();
-	private static List<Entity> gaviotas = new ArrayList<Entity>();
+	private static List<Entity> diablillo = new ArrayList<Entity>();
 	private static TexturedModel modeloStatic;
+	
+	public static Player player;
 
-	public static void main(String[] args) {
+	public static void ejecutarCantuna() {
 		// creamos la pantalla para visualizar lo que pasa en el juego
 		DisplayManager.createDisplay();
 		// objeto para cargar los modelos en memoria para posteriormente ser
@@ -72,8 +66,9 @@ public class MainGameLoop {
 		ModelData treeData = OBJFileLoader.loadOBJ("tree");
 		ModelData stallData = OBJFileLoader.loadOBJ("stall");
 		ModelData cubeData = OBJFileLoader.loadOBJ("cubo");
-		ModelData gabyData = OBJFileLoader.loadOBJ("gaviOta");
-		ModelData steveData = OBJFileLoader.loadOBJ("steve");
+		ModelData devilData = OBJFileLoader.loadOBJ("bluedevil");
+		ModelData steveData = OBJFileLoader.loadOBJ("luchOvejas");
+		ModelData boxData = OBJFileLoader.loadOBJ("box");
 		
 		// carga de los modelos 3D dentro del escenario
 		RawModel stallModel = loader.loadToVAO(stallData.getVertices(), stallData.getTextureCoords(),
@@ -82,15 +77,18 @@ public class MainGameLoop {
 				treeData.getNormals(), treeData.getIndices());
 		RawModel cuboModel = loader.loadToVAO(cubeData.getVertices(), cubeData.getTextureCoords(),
 				cubeData.getNormals(), cubeData.getIndices());
-		RawModel gabyModel = loader.loadToVAO(gabyData.getVertices(), gabyData.getTextureCoords(),
-				gabyData.getNormals(), gabyData.getIndices());
+		RawModel devilModel = loader.loadToVAO(devilData.getVertices(), devilData.getTextureCoords(),
+				devilData.getNormals(), devilData.getIndices());
 		RawModel steveModel = loader.loadToVAO(steveData.getVertices(), steveData.getTextureCoords(),
 				steveData.getNormals(), steveData.getIndices());
+		RawModel boxModel = loader.loadToVAO(boxData.getVertices(), boxData.getTextureCoords(),
+				boxData.getNormals(), boxData.getIndices());
+		
 
 		RawModel arbolLowpolyModel = OBJLoader.loadObjModel("lowPolyTree", loader);
 
 		// carga de texturas de cada modelo
-		modeloStatic = new TexturedModel(gabyModel, new ModelTexture(loader.loadTexture("gabyTexture")));
+		modeloStatic = new TexturedModel(devilModel, new ModelTexture(loader.loadTexture("bluedevil")));
 		TexturedModel staticModelStall = new TexturedModel(stallModel,
 				new ModelTexture(loader.loadTexture("stallTexture")));
 		TexturedModel cubo = new TexturedModel(cuboModel, new ModelTexture(loader.loadTexture("BlackColor")));
@@ -104,7 +102,9 @@ public class MainGameLoop {
 		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader),
 				new ModelTexture(loader.loadTexture("flower")));
 		TexturedModel steveTexture = new TexturedModel(steveModel,
-				new ModelTexture(loader.loadTexture("steveTexture")));
+				new ModelTexture(loader.loadTexture("luchovejasTexture")));
+		TexturedModel boxTexture = new TexturedModel(boxModel,
+				new ModelTexture(loader.loadTexture("box")));
 
 		// modelo que obtendrá características de brillo y material
 		ModelTexture textureStall = staticModelStall.getTexture();
@@ -118,40 +118,82 @@ public class MainGameLoop {
 		flower.getTexture().setUsaFalsaIluminacion(true);
 		fern.getTexture().setTieneTransparencia(true);
 
+		Terrain[][] terrain;
+		terrain = new Terrain[2][2];
+		terrain[0][0] = new Terrain(-1, -1, loader, texturePack, blendMap, "heightmap");
+		terrain[1][0] = new Terrain(0, -1, loader, texturePack, miBlendMap, "heightmap");
+		terrain[0][1] = new Terrain(-1, 0, loader, texturePack, blendMap, "heightmap");
+		terrain[1][1] = new Terrain(0, 0, loader, texturePack, miBlendMap, "heightmap");
+
+		Terrain terrenoActual;
+		
+		List<Terrain> terrenos = new ArrayList<Terrain>();
+		for (int i = 0; i < terrain.length; i++)		
+			for (int j = 0; j < terrain[0].length; j++)	
+				terrenos.add(terrain[i][j]);
+		
 		// las entidades son los modelos 3D que cargamos en el escenario
-		Entity gabyEntidad = new Entity(modeloStatic, new Vector3f(10, 0, -20), 0, 0, 0, 1);
+		Entity diablillos = new Entity(modeloStatic, new Vector3f(10, 0, -20), 0, 0, 0, 1);
 		Entity entidadStall = new Entity(staticModelStall, new Vector3f(-5, 0, -20), 0, 0, 0, 1);
 
+		List<Entity> boxes = new ArrayList<Entity>();
 		List<Entity> entities = new ArrayList<Entity>();
 		List<Entity> arbolesLowPoly = new ArrayList<Entity>();
 		List<Entity> variosCubos = new ArrayList<Entity>();
-		gaviotas.add(gabyEntidad);
+		diablillo.add(diablillos);
 		List<Entity> arboles = new ArrayList<Entity>();
 
+		for (int i = 0; i < 5; i++) {
+			boxes.add(new Entity(boxTexture,
+					new Vector3f(90, terrain[1][0].getHeighOfTerrain(90, -50 * (i + 1)) + 3, -50 * (i + 1)), 0, 0, 0, 3));
+		}
+		
 		for (int i = 0; i < 6000; i++) {
 			if (i % 3 == 0) {
+				float x = random.nextFloat() * 1600 - 800;
+				float z = random.nextFloat() * -800;
+				terrenoActual = terrain[(int) (x / Terrain.getSize() + 1)][(int) (z / Terrain.getSize() + 1)];
+				float y = terrenoActual.getHeighOfTerrain(x, z);
 				entities.add(new Entity(flower,
-						new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, 0, 0, 1f));
+						new Vector3f(x, y, z), 0, 0, 0, 1f));
+				x = random.nextFloat() * 1600 - 800;
+				z = random.nextFloat() * -800;
+				terrenoActual = terrain[(int) (x / Terrain.getSize() + 1)][(int) (z / Terrain.getSize() + 1)];
+				y = terrenoActual.getHeighOfTerrain(x, z);
 				entities.add(new Entity(grass,
-						new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, 0, 0, 1));
+						new Vector3f(x, y, z), 0, 0, 0, 1));
 			}
 			if (i % 7 == 0) {
+				float x = random.nextFloat() * 1600 - 800;
+				float z = random.nextFloat() * -800;
+				int gridX = (int) (x / Terrain.getSize() + 1);
+				int gridZ = (int) (z / Terrain.getSize() + 1);
+				float y = terrain[gridX][gridZ].getHeighOfTerrain(x, z);
 				entities.add(new Entity(fern,
-						new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, 0, 0, 0.6f));
+						new Vector3f(x, y, z), 0, 0, 0, 0.6f));
 			}
 		}
 
 		// árboles
 		for (int i = 0; i < 500; i++) {
+			float x = random.nextFloat() * 1600 - 800;
+			float z = random.nextFloat() * -800;
+			terrenoActual = terrain[(int) (x / Terrain.getSize() + 1)][(int) (z / Terrain.getSize() + 1)];
+			float y = terrenoActual.getHeighOfTerrain(x, z);
 			arboles.add(new Entity(arbolTextura,
-					new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, 0, 0, 3));
+					new Vector3f(x, y, z), 0, 0, 0, 3));
 		}
-		for (int i = 0; i < 200; i++) {
+		
+		for (int i = 0; i < 500; i++) {
+			float x = random.nextFloat() * 1600 - 800;
+			float z = random.nextFloat() * -800;
+			terrenoActual = terrain[(int) (x / Terrain.getSize() + 1)][(int) (z / Terrain.getSize() + 1)];
+			float y = terrenoActual.getHeighOfTerrain(x, z);
 			arbolesLowPoly.add(new Entity(arbolLowPolyTextura,
-					new Vector3f(random.nextFloat() * 1600 - 800, 0, random.nextFloat() * -800), 0, random.nextFloat() * 360,
+					new Vector3f(x, y, z), 0, random.nextFloat() * 360,
 					0, 0.5f));
 		}
-
+		
 		// cubos
 		for (int i = 0; i < 100; i++) {
 			float x = random.nextFloat() * 200 - 100;
@@ -164,11 +206,8 @@ public class MainGameLoop {
 		// creamos una luz en el escenario
 		Light luz = new Light(new Vector3f(2000, 2000, 1000), new Vector3f(1, 1, 1));
 
-		Terrain terreno = new Terrain(-1, -1, loader, texturePack, blendMap);
-		Terrain terreno2 = new Terrain(0, -1, loader, texturePack, miBlendMap);
-
 		// Player del videojuego 
-		Player player = new Player(steveTexture, new Vector3f(100, 0, -50), 0, 180, 0, 1);
+		player = new Player(steveTexture, new Vector3f(100, 0, -50), 0, 180, 0, 1f);
 		// creación de la cámara a utilizar
 		Camara camera = new Camara(player);
 
@@ -178,14 +217,24 @@ public class MainGameLoop {
 		// donde ocurren todas las actualizaciones
 		while (!Display.isCloseRequested()) {
 			// game logic
-			gabyEntidad.increaseRotation(0, 1, 0);
+			diablillos.increaseRotation(0, 1, 0);
 			entidadStall.increaseRotation(0, 1, 0);
+			renderer.controlesRenderizacion();
 			camera.move();
-			player.move();
+			
+			int gridX = (int) (player.getPosition().x / Terrain.getSize() + 1);
+			int gridZ = (int) (player.getPosition().z / Terrain.getSize() + 1);
+			player.move(terrain[gridX][gridZ], entidadStall);
 
-			renderer.procesarTerreno(terreno);
-			renderer.procesarTerreno(terreno2);
+			for (Terrain terreno : terrenos) {
+				renderer.procesarTerreno(terreno);
+			}
+			
 			renderer.procesarEntidad(player);
+			for (Entity box : boxes) {
+				renderer.procesarEntidad(box);
+			}
+			
 			// render
 			renderer.render(luz, camera);
 
@@ -209,7 +258,7 @@ public class MainGameLoop {
 			// bar
 			renderer.procesarEntidad(entidadStall);
 			// Gaby
-			for (Entity gaby : gaviotas) {
+			for (Entity gaby : diablillo) {
 				renderer.procesarEntidad(gaby);
 			}
 
@@ -218,6 +267,16 @@ public class MainGameLoop {
 		renderer.cleanUp();
 		loader.cleanUp();
 		DisplayManager.closeDisplay();
+	}
+	
+	/**
+	 * Método principal que se ejecuta para iniciar la aplicación
+	 * 
+	 * @param args
+	 *            argumento
+	 */
+	public static void main(String[] args) {
+		ejecutarCantuna();
 	}
 
 	// codificación en consola para agregar entidades por medio del teclado
@@ -230,29 +289,20 @@ public class MainGameLoop {
 					System.out.println("ENTER KEY IS PRESSED");
 					float x = random.nextFloat() * 100 - 50;
 					float z = random.nextFloat() * -300;
-					gaviotas.add(new Entity(modeloStatic, new Vector3f(x, 0, z), 0, random.nextFloat() * 360, 0, 1f));
-					System.out.println("Array Gaviotas tamaño: " + gaviotas.size());
+					diablillo.add(new Entity(modeloStatic, new Vector3f(x, 0, z), 0, random.nextFloat() * 360, 0, 1f));
+					System.out.println("Array Gaviotas tamaño: " + diablillo.size());
 				}
 				if (Keyboard.getEventKey() == Keyboard.KEY_UP) {
 					System.out.println("UP Key is pressed");
 					index += 1;
 					System.out.println("index: " + index);
 				}
-				if (Keyboard.getEventKey() == Keyboard.KEY_X) {
-					x += 0.1f;
-				}
-				if (Keyboard.getEventKey() == Keyboard.KEY_Y) {
-					y += 0.1f;
-				}
-				if (Keyboard.getEventKey() == Keyboard.KEY_Z) {
-					z += 0.1f;
-				}
 				
 				if (Keyboard.getEventKey() == Keyboard.KEY_RCONTROL) {
 					System.out.println("SPACE Key is pressed");
-					gaviotas.remove(index);
+					diablillo.remove(index);
 					System.out.println("Gaviota eliminada num: " + index);
-					System.out.println("nuevo tamaño de Gaviotas: " + gaviotas.size());
+					System.out.println("nuevo tamaño de Gaviotas: " + diablillo.size());
 				}
 			} else {
 				if (Keyboard.getEventKey() == Keyboard.KEY_RETURN) {

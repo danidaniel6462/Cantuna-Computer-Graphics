@@ -8,6 +8,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import futuroingeniero.models.TexturedModel;
 import futuroingeniero.renderEngine.DisplayManager;
+import futuroingeniero.terrains.Terrain;
 
 /**
  * @author Daniel Loza
@@ -23,15 +24,14 @@ public class Player extends Entity{
 	private static final float JUMP_POWER = 30; // poder del salto del jugador
 	private static final float RUN_SPEED = 30; // v del salto del jugador
 	
-	private static final float TERRAIN_HEIGHT = 0; // altura del terreno con el que colisionará el jugador
-	private static final float TERRAIN_DEPTH = -1000; // profundidad del terreno creado para poder colisionar con el borde
-	private static final float TERRAIN_WIDE = 1000; // ancho del terreno creado para poder colisionar con el borde
+	// private static final float TERRAIN_DEPTH = -800; // profundidad del terreno creado para poder colisionar con el borde
+	// private static final float TERRAIN_WIDE = 800; // ancho del terreno creado para poder colisionar con el borde
 	
 	private float currentSpeed = 0; // velocidad actual del jugador incializado en 0 ya que no se mueve
 	private float currenTurnSpeed = 0; // velocidad de la rotación del jugador inicializado en 0 ya que no se mueve
-	private float upwardsSpeed = 0; // velocidad del movimieto hacia arriba del jugador inicializado en 0 ya que no se mueve y posicionado en 0 en el eje Y
+	private static float upwardsSpeed = 0; // velocidad del movimieto hacia arriba del jugador inicializado en 0 ya que no se mueve y posicionado en 0 en el eje Y
 	
-	private boolean isInAir = false;
+	private static boolean isInAir = false;
 	
 	/**
 	 * Constructor de la clase Payer
@@ -51,8 +51,9 @@ public class Player extends Entity{
 	 * Método para el movimiento del jugador
 	 * En este método se realiza el cálculo de la nueva posición del jugador en el espacio
 	 * con ayuda de funciones trigonométricas
+	 * @param terreno valor que determina en que terreno se ecuentra el jugador
 	 */
-	public void move() {
+	public void move(Terrain terreno, Entity entidad) {
 		// obtenemos los eventos del teclado
 		checkInput();
 		// enviamos los datos para incrementar la rotación del personaje
@@ -72,14 +73,20 @@ public class Player extends Entity{
 		upwardsSpeed += GRAVITY * DisplayManager.getFrameTimeSeconds();
 		// enviamos la posición en Y al momento de saltar
 		super.increasePosition(0, upwardsSpeed * DisplayManager.getFrameTimeSeconds(), 0);
-		// comprobamos que el personaje no se pase del terreno
-		if(super.getPosition().y < TERRAIN_HEIGHT) { 
+		
+		// obtenemos la altura del terreno con la posición del jugador
+		// con este valor podemos realizar la colisión del jugador con el terreno  
+		float terrainHeight = terreno.getHeighOfTerrain(super.getPosition().x, super.getPosition().z);
+				
+		// comprobamos que el personaje colisione con el terreno
+		if(super.getPosition().y < terrainHeight) { 
 			upwardsSpeed = 0;
 			// como el personaje está en el suelo está listo para pegar otro salto por eso la variable booleana es falsa, xq no está en el aire :3
 			isInAir = false;
-			super.getPosition().y = TERRAIN_HEIGHT;
+			super.getPosition().y = terrainHeight;
 		}
 		
+		/*
 		// colisión con los bordes del terreno
 		if(super.getPosition().z > TERRAIN_DEPTH - TERRAIN_DEPTH) { 
 			super.setPosition(new Vector3f(super.getPosition().x, super.getPosition().y, 0));
@@ -92,17 +99,21 @@ public class Player extends Entity{
 		} else if(super.getPosition().x < -TERRAIN_WIDE) {
 			super.setPosition(new Vector3f(-TERRAIN_WIDE, super.getPosition().y, super.getPosition().z));
 		} 
+		
+		*/
+		
 	}
 	
 	/**
 	 * Método que salte el jugador
 	 * 
 	 */
-	private void jump() {
+	public static void jump() {
 		// si es verdad que está en el aire, hacer
 		if(!isInAir) {
 			// pega el salto
-			this.upwardsSpeed = JUMP_POWER;
+			//this.upwardsSpeed = JUMP_POWER;
+			upwardsSpeed = JUMP_POWER;
 			// la variable se hace verdadera para que no vuelva a saltar en el aire
 			isInAir = true;
 		}

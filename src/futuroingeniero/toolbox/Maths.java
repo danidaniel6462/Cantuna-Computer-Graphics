@@ -4,6 +4,7 @@
 package futuroingeniero.toolbox;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import futuroingeniero.entities.Camara;
@@ -14,6 +15,23 @@ import futuroingeniero.entities.Camara;
  * Clase para realizar los cálculos dentro de nuestro motor de Juego, es una clase fundamental ya que aqui es donde realizaremos diversos cálculos para controlar el videojuego
  */
 public class Maths {
+	
+	/**
+	 * Método matemático para encontrar el baricentro
+	 * Este método obtiene tres valores que forman un triángulo y la posición del jugador
+	 * @param p1 punto 1 del triángulo
+	 * @param p2 punto 2 del triángulo
+	 * @param p3 punto 3 del triángulo
+	 * @param pos posición del jugador en dos coordenadas 
+	 * @return devuelve la altura del triángulo y la posición del jugador
+	 */
+	public static float barryCentric(Vector3f p1, Vector3f p2, Vector3f p3, Vector2f pos) {
+		float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
+		float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
+		float l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;
+		float l3 = 1.0f - l1 - l2;
+		return l1 * p1.y + l2 * p2.y + l3 * p3.y;
+	}
 	
 	/**
 	 * Método para realizar transformaciones en los objetos, con ayuda de este método se puede crear traslaciones, rotaciones y escalado uniforme

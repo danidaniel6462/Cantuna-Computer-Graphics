@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
@@ -167,4 +168,15 @@ public class MasterRenderer {
         projectionMatrix.m33 = 0;
     }
 	
+    public void controlesRenderizacion() {
+		if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
+		       GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+		       GL11.glDisable(GL11.GL_TEXTURE_2D);
+		}
+
+		if (Keyboard.isKeyDown(Keyboard.KEY_F2)) {
+		       GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+		       GL11.glEnable(GL11.GL_TEXTURE_2D);
+		}
+    }
 }

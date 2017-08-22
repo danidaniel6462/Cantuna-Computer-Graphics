@@ -76,17 +76,17 @@ public class MasterRenderer {
 	 * @param sol variable para iluminar la escena
 	 * @param camara proyección de la cámara y ubicación de la misma 
 	 */
-	public void render(Light sol, Camara camara) {
+	public void render(List<Light> luces, Camara camara) {
 		prepare();
         shader.start();
         shader.loadCieloColor(RED, GREEN, BLUE);
-        shader.loadLuz(sol);
+        shader.loadLuces(luces);
         shader.loadViewMatrix(camara);
         renderer.render(entidades);
         shader.stop();
         terrainShader.start();
         terrainShader.loadCieloColor(RED, GREEN, BLUE);
-        terrainShader.loadLuz(sol);
+        terrainShader.loadLuces(luces);
         terrainShader.loadViewMatrix(camara);
         terrainRenderer.render(terrains);
         terrainShader.stop();

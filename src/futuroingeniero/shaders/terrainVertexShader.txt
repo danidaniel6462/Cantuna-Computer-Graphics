@@ -49,14 +49,14 @@ out vec2 pass_textureCoords;
 // el cálculo de producto escalar entre estos dos vectores es 1 cuando tienen las misma dirección
 // la luz sería lo más intensa en esa cara y si el valor es 0 la cara no recibe nada de luz 
 out vec3 surfaceNormal;
-out vec3 toLightVector;
+out vec3 toLightVector[4];
 out vec3 toCameraVector; 
 out float visibilidad;
 
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
-uniform vec3 luzPosicion;
+uniform vec3 luzPosicion[4];
 
 // densidad de la niebla
 const float density = 0.0035;
@@ -74,7 +74,11 @@ void main(void){
 	// para esto debemos tomar en cuanta que debemos multiplicar por la transformationMatrix, ya que nuestro modelo va a moverse dentro del espacio
 	// finalmente al realizar la operación debemos devolver valores xyz para poder realizar los cálculos en el fragmentShader
 	surfaceNormal = (transformationMatrix * vec4(normal, 0.0)).xyz;
-	toLightVector = luzPosicion - worldPosition.xyz;
+	
+	for (int i = 0; i < 4; i++){
+		toLightVector[i] = luzPosicion[i] - worldPosition.xyz;
+	}
+
 	toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
 
 	// distancia de un vértice a la cámara para poder calcular la densidad de la niebla

@@ -3,6 +3,8 @@
  */
 package futuroingeniero.shaders;
 
+import java.util.List;
+
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -16,6 +18,9 @@ import futuroingeniero.toolbox.Maths;
  */
 public class TerrainShader extends ShaderProgram {
 
+	// número máximo de luces
+	private static final int MAX_LIGHTS = 4;
+	
 	/**
 	 * @param VERTEX_FILE archivo que contiene los cálculos para los VertexSahder
 	 * @param FRAGMENT_FILE archivo que contiene los cálculos para los FragmentShader, para cada pixel
@@ -28,8 +33,8 @@ public class TerrainShader extends ShaderProgram {
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
 	private int location_viewMatrix;
-	private int location_luzColor;
-	private int location_luzPosicion;
+	private int location_luzColor[];
+	private int location_luzPosicion[];
 	private int location_shineDamper;
 	private int location_reflectivity;
 	private int location_cieloColor;
@@ -70,8 +75,6 @@ public class TerrainShader extends ShaderProgram {
 		location_transformationMatrix = super.getUniformLocation("transformationMatrix");
 		location_projectionMatrix = super.getUniformLocation("projectionMatrix");
 		location_viewMatrix = super.getUniformLocation("viewMatrix");
-		location_luzColor = super.getUniformLocation("luzColor");
-		location_luzPosicion = super.getUniformLocation("luzPosicion");
 		location_shineDamper = super.getUniformLocation("shineDamper");
 		location_reflectivity = super.getUniformLocation("reflectivity");
 		location_cieloColor = super.getUniformLocation("cieloColor");
@@ -80,6 +83,15 @@ public class TerrainShader extends ShaderProgram {
 		location_gTexture = super.getUniformLocation("gTexture");
 		location_bTexture = super.getUniformLocation("bTexture");
 		location_blendMap = super.getUniformLocation("blendMap");
+		
+		location_luzPosicion = new int[MAX_LIGHTS];
+		location_luzColor = new int[MAX_LIGHTS];
+		
+		for(int i = 0; i < MAX_LIGHTS; i++) {
+			location_luzColor[i] = super.getUniformLocation("luzColor[" + i + "]");
+			location_luzPosicion[i] = super.getUniformLocation("luzPosicion[" + i + "]");
+		}
+		
 	}
 	
 	public void conectarUnidadesdTextura() {
@@ -121,13 +133,22 @@ public class TerrainShader extends ShaderProgram {
 	}
 	
 	/**
-	 * Método para cargar la luz en el escenario
-	 * @param luz variable que obtendrá las características de la luz 
+	 * Método para cargar las luces en el escenario
+	 * @param luces lista de luces que se representarán en el escenario 
 	 */
-	public void loadLuz(Light luz) {
-		// carga las características de la luz en variable enteras que representan la ubicación de los datos
-		super.loadVector(location_luzPosicion, luz.getPosition());
-		super.loadVector(location_luzColor, luz.getColor());
+	public void loadLuces(List<Light> luces) {
+		// carga las características de las luces en variable enteras que representan la ubicación de los datos
+		for(int i = 0; i < MAX_LIGHTS; i++) {
+			// comprobamos si existen cada una de las luces
+			// caso contrario creamos una nueva luz en la posición (0, 0, 0) con color (0, 0, 0)
+			if(i < luces.size()) {
+				super.loadVector(location_luzPosicion[i], luces.get(i).getPosition());
+				super.loadVector(location_luzColor[i], luces.get(i).getColor());
+			} else {
+				super.loadVector(location_luzPosicion[i], new Vector3f(0, 0, 0));
+				super.loadVector(location_luzColor[i], new Vector3f(0, 0, 0));
+			}
+		}
 	}
 	
 	/**

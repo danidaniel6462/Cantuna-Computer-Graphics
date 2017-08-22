@@ -211,8 +211,7 @@ public class MainGameLoop {
 	        }
 	    }
 
-		// creamos una luz en el escenario
-		Light luz = new Light(new Vector3f(2000, 2000, 1000), new Vector3f(1, 1, 1));
+
 
 		// Player del videojuego 
 		player = new Player(steveTexture, "lucho", new Vector3f(100, 0, -50), 0, 180, 0, 1f);
@@ -222,10 +221,19 @@ public class MainGameLoop {
 		// lista de GUI para el videojuego
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
 		GuiTexture gui0 = new GuiTexture(loader.loadTexture("guis/uce"), new Vector2f(0.7f, 0.5f), new Vector2f(0.25f, 0.45f));
-		GuiTexture gui1 = new GuiTexture(loader.loadTexture("guis/vida"), new Vector2f(-0.7f, -0.7f), new Vector2f(0.25f, 0.25f));
+		GuiTexture gui1 = new GuiTexture(loader.loadTexture("guis/vida"), new Vector2f(-0.65f, -0.7f), new Vector2f(0.3f, 0.4f));
 		guis.add(gui0);
 		guis.add(gui1);
 
+		// creamos una luz en el escenario
+		//Light luz = new Light(new Vector3f(2000, 2000, 1000), new Vector3f(1, 1, 1));
+		Light luz0 = new Light(new Vector3f(0, 10000, -7000), new Vector3f(1, 1, 1));
+		List<Light> luces = new ArrayList<Light>();
+		luces.add(luz0);
+		luces.add(new Light(new Vector3f(-200, 10, -200), new Vector3f(0.5f, 0, 0)));
+		luces.add(new Light(new Vector3f(200, 10, 200), new Vector3f(0, 0, 0.5f)));
+		
+		
 		// bucle del juego real
 		// donde ocurren todas las actualizaciones
 		while (!Display.isCloseRequested()) {
@@ -251,7 +259,7 @@ public class MainGameLoop {
 			renderer.procesarEntidad(entidadStall);
 
 			// render
-			renderer.render(luz, camera);
+			renderer.render(luces, camera);
 			
 			for (Entity item : items) {
 				renderer.procesarEntidad(item);

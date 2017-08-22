@@ -50,14 +50,20 @@ out vec2 pass_textureCoords;
 // el cálculo de producto escalar entre estos dos vectores es 1 cuando tienen las misma dirección
 // la luz sería lo más intensa en esa cara y si el valor es 0 la cara no recibe nada de luz 
 out vec3 surfaceNormal;
-out vec3 toLightVector;
+out vec3 toLightVector[4];
+// vector hacia la cámara
 out vec3 toCameraVector; 
+// variable utilizada para la neblida en el escenario, es un factor llamado visibilidad
 out float visibilidad;
 
+// variable uniforme que recibe las transformaciones del modelo
 uniform mat4 transformationMatrix;
+// matriz de proyección para ajustarlo a la cámara 
 uniform mat4 projectionMatrix;
+// matriz de vista
 uniform mat4 viewMatrix;
-uniform vec3 luzPosicion;
+// posición de la luz, es un arreglo que tiene 4 luces, 1 por cada multiple luz
+uniform vec3 luzPosicion[4];
 
 // número de filas que tiene la textura atlas
 uniform float numeroFilas;
@@ -90,7 +96,11 @@ void main(void){
 	// para esto debemos tomar en cuanta que debemos multiplicar por la transformationMatrix, ya que nuestro modelo va a moverse dentro del espacio
 	// finalmente al realizar la operación debemos devolver valores xyz para poder realizar los cálculos en el fragmentShader
 	surfaceNormal = (transformationMatrix * vec4(realNormal, 0.0)).xyz;
-	toLightVector = luzPosicion - worldPosition.xyz;
+	
+	for (int i = 0; i < 4; i++){
+		toLightVector[i] = luzPosicion[i] - worldPosition.xyz;
+	}
+
 	toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
 	
 	// distancia de un vértice a la cámara para poder calcular la densidad de la niebla
@@ -101,27 +111,3 @@ void main(void){
 	visibilidad = clamp(visibilidad, 0.0, 1.0);
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

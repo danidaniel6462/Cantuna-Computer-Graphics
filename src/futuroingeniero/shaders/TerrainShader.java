@@ -40,7 +40,7 @@ public class TerrainShader extends ShaderProgram {
 	private int location_blendMap;
 	
 	/**
-	 * Constructor sin parámetros que recibe la ruta de los archivos Shader.txt
+	 * Constructor sin parámetros que obtiene la ruta de los archivos Shader.txt
 	 */
 	public TerrainShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -58,7 +58,8 @@ public class TerrainShader extends ShaderProgram {
 	}
 
 	/**
-	 * Método que devuelve la ubicación de la matriz de transformación
+	 * Método que devuelve la ubicación de las variables creadas en el VertexShader y FragmentShader 
+	 * al utilizar este método se debe escribir el nombre exacto que definimos en los archivos VertexShader y FragementShader
 	 */
 	@Override
 	protected void getAllUniformLocation() {

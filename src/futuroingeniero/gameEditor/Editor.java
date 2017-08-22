@@ -13,7 +13,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import futuroingeniero.engineTest.MainGameLoop;
-import futuroingeniero.entities.Player;
 import java.awt.Panel;
 
 public class Editor extends JFrame {
@@ -21,7 +20,6 @@ public class Editor extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	public static Canvas miCanvasOpenGL;
-	public static Editor frame;
 	private Panel panel;
 	private JButton btnNewButton;
 
@@ -32,8 +30,7 @@ public class Editor extends JFrame {
 
 	public static void main(String[] args) {
 		start();
-		
-		MainGameLoop.ejecutarCantuna();
+		MainGameLoop.run();
 
 		// se debe crear un hilo separado para ejecutar el juego y la interfaz gráfica al mismo tiempo
 		// en un futuro me plantearé hacer el Thread por separado
@@ -72,7 +69,7 @@ public class Editor extends JFrame {
 		panel.add(btnTest);
 		btnTest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Player.jump();
+				MainGameLoop.crearEntidad();
 			}
 		});
 	}
@@ -81,7 +78,7 @@ public class Editor extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					frame = new Editor();
+					Editor frame = new Editor();
 					frame.setSize(1280, 720);
 					frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 					frame.setResizable(true);

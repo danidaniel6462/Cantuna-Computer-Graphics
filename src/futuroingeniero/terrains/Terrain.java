@@ -18,22 +18,14 @@ import futuroingeniero.textures.TerrainTexture;
 import futuroingeniero.textures.TerrainTexturePack;
 import futuroingeniero.toolbox.Maths;
 
+import static futuroingeniero.renderEngine.GlobalConstants.*;
+
 /**
  * @author Daniel Loza
  *
  */
 public class Terrain {
-	/**
-	 * @value #STATIC_FIELD SIZE constante que determina el tamaño del terreno
-	 * @value #STATIC_FIELD VERTEX_COUNT constante que determina el número de
-	 *        vértices a lo largo de cada lado del terreno
-	 */
-	private static final float SIZE = 800; // Tamaño del terreno
-	private static final float MAX_HEIGHT = 40; // máxima altura del terreno
-	// se multiplica 256, 3 veces ya que son el color de cada píxel del terreno
-	// y los colores estan entre 0 y 255, total 256, por cada canal RGB, serían 256 * 256 * 256
-	private static final float MAX_PIXEL_COLOR = 256 * 256 * 256;
-																
+														
 	// variables para determinar la posición del terreno
 	private float x;
 	private float z;
@@ -51,7 +43,7 @@ public class Terrain {
 	 * Rejilla: es un pequeño espacio del terreno, se lo puede definir como un
 	 * espacio del terreno El terreno está constituido por rejillas en el eje x y z,
 	 * para saber el tamaño del terreno debemos multiplicar cada rejilla con el
-	 * tamaño (SIZE) del terreno
+	 * tamaño (SIZE_TERRAIN) del terreno
 	 * 
 	 * @param gridX
 	 *            coordenadas de la rejilla en el eje X
@@ -66,8 +58,8 @@ public class Terrain {
 			TerrainTexture blendMap, String heightMap) {
 		this.texturePack = texturePack;
 		this.blendMap = blendMap;
-		this.x = gridX * SIZE;
-		this.z = gridZ * SIZE;
+		this.x = gridX * SIZE_TERRAIN;
+		this.z = gridZ * SIZE_TERRAIN;
 		this.model = generateTerrain(loader, heightMap);
 	}
 
@@ -118,7 +110,7 @@ public class Terrain {
 		float terrainX = worldX - this.x;
 		float terrainZ = worldZ - this.z;
 		// calculamos el tamaño de cada cuadrado que tiene el terreno
-		float gridSquareSize = SIZE / (float) (heights.length - 1);
+		float gridSquareSIZE_TERRAIN = SIZE_TERRAIN / (float) (heights.length - 1);
 		// averiguamos en qué cuadrícula está el jugador con las posiciones en x, z para el terreno
 		// utilizamos la función floor obtener solo el valor entero de la división
 		// por ejemplo:
@@ -126,8 +118,8 @@ public class Terrain {
 		// (13, 8) / 5 = (2.6, 1.6) dividimos para 5, que es el tamaño de cada regilla (grid)
 		// floor(2.6, 1.6), obtenemos el valor entero de los número ingresados y obtenemos
 		// (2, 1) que sería la posición del cuadrada en el terreno
-		int gridX = (int) Math.floor(terrainX / gridSquareSize);
-		int gridZ = (int) Math.floor(terrainZ / gridSquareSize);
+		int gridX = (int) Math.floor(terrainX / gridSquareSIZE_TERRAIN);
+		int gridZ = (int) Math.floor(terrainZ / gridSquareSIZE_TERRAIN);
 		// calculamos si el valor de griX y griZ de verdad están en una cuadrícula válida del terreno
 		if(gridX >= heights.length - 1 || gridZ >= heights.length - 1 || gridX < 0 || gridZ < 0) {
 			// devolvemos la altura para el jugador sea cero
@@ -135,8 +127,8 @@ public class Terrain {
 		}
 		// si el jugador está en la cuadricula calculamos la posición del jugador
 		// para realizarlo utilizamos el módulo para calcular la distancia del jugador desde la esquina superior izquierda
-		float xCoord = (terrainX % gridSquareSize) / gridSquareSize;
-		float zCoord = (terrainZ % gridSquareSize) / gridSquareSize;
+		float xCoord = (terrainX % gridSquareSIZE_TERRAIN) / gridSquareSIZE_TERRAIN;
+		float zCoord = (terrainZ % gridSquareSIZE_TERRAIN) / gridSquareSIZE_TERRAIN;
 		// averiguamos en que lado del triçangulo de cada porción del terreno está el personaje
 		float respuesta;
 		if(xCoord <= (1 - zCoord)) {
@@ -167,7 +159,7 @@ public class Terrain {
 		
 		BufferedImage image = null;
 		try {
-			image = ImageIO.read(new File("res/texturas/" + heightMap + ".png"));
+			image = ImageIO.read(new File("res/texturas/maps/" + heightMap + ".png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("\nMI ERROR: Intentó cargar el heightMap " + heightMap + ".png Pero no funcionó\n");
@@ -185,11 +177,11 @@ public class Terrain {
 		int vertexPointer = 0;
 		for (int i = 0; i < VERTEX_COUNT; i++) {
 			for (int j = 0; j < VERTEX_COUNT; j++) {
-				vertices[vertexPointer * 3] = (float) j / ((float) VERTEX_COUNT - 1) * SIZE;
+				vertices[vertexPointer * 3] = (float) j / ((float) VERTEX_COUNT - 1) * SIZE_TERRAIN;
 				float height = getHeight(j, i, image);
 				heights[j][i] = height;
 				vertices[vertexPointer * 3 + 1] = height;
-				vertices[vertexPointer * 3 + 2] = (float) i / ((float) VERTEX_COUNT - 1) * SIZE;
+				vertices[vertexPointer * 3 + 2] = (float) i / ((float) VERTEX_COUNT - 1) * SIZE_TERRAIN;
 				Vector3f normal = calcularNormal(j, i, image);
 				normals[vertexPointer * 3] = normal.x;
 				normals[vertexPointer * 3 + 1] = normal.y;
@@ -253,10 +245,4 @@ public class Terrain {
 		return height;
 	}
 
-	/**
-	 * @return el size
-	 */
-	public static float getSize() {
-		return SIZE;
-	}
 }

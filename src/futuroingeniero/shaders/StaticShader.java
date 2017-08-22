@@ -1,6 +1,7 @@
 package futuroingeniero.shaders;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import futuroingeniero.entities.Camara;
@@ -39,6 +40,8 @@ public class StaticShader extends ShaderProgram{
 	private int location_reflectivity;
 	private int location_usaFalsaIluminacion;
 	private int location_cieloColor;
+	private int location_numeroFilas;
+	private int location_offset;
 	
 	/**
 	 * Constructor sin parámetros que recibe la ruta de los archivos Shader.txt
@@ -59,12 +62,11 @@ public class StaticShader extends ShaderProgram{
 	}
 
 	/**
-	 * Método que devuelve la ubicación de la matriz de transformación
+	 * Método que devuelve la ubicación de las variables creadas en el VertexShader y FragmentShader 
+	 * al utilizar este método se debe escribir el nombre exacto que definimos en los archivos VertexShader y FragementShader
 	 */
 	@Override
 	protected void getAllUniformLocation() {
-		// en las siguientes líneas guardamos el nombre exacto que definimos en los archivos
-		// VertexShader y FragmentShader
 		
 		// igualamos a una variable entera y hacemos referencia a la variable de los archivos Shader
 		location_transformationMatrix = super.getUniformLocation("transformationMatrix");
@@ -76,6 +78,25 @@ public class StaticShader extends ShaderProgram{
 		location_reflectivity = super.getUniformLocation("reflectivity");
 		location_usaFalsaIluminacion = super.getUniformLocation("usaFalsaIluminacion");
 		location_cieloColor = super.getUniformLocation("cieloColor");
+		location_numeroFilas = super.getUniformLocation("numeroFilas");
+		location_offset = super.getUniformLocation("offset");
+	}
+	
+	/**
+	 * Método para cargar las variables uniformes del número de Filas
+	 * @param numeroFilas
+	 */
+	public void loadNumeroFilas(int numeroFilas) {
+		super.loadFloat(location_numeroFilas, numeroFilas);
+	}
+	
+	/**
+	 * Método para el desplazamiento x & y de las texturas Atlas
+	 * @param x desplazamiento en X de la textura Atlas
+	 * @param y desplazamiento en Y de la textura Atlas
+	 */
+	public void loadOffset(float x, float y) {
+		super.load2DVector(location_offset, new Vector2f(x, y));
 	}
 	
 	/**

@@ -12,12 +12,17 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 /**
  * @author Daniel Loza
  *
- * ShaderProgram Clase para obtener los archivos GLSL para losmodelos opeGL
+ * <h1>ShaderProgram</h1>
+ * Clase para cargar los datos a los archivos GLSL para los modelos OpenGL
+ * 
+ * <b>Resumen</b>
+ * Cada método creado en esta clase envía los datos a los Shader para realizar los cálculos en los archivos GLSL
  */
 
 public abstract class ShaderProgram {
@@ -37,16 +42,21 @@ public abstract class ShaderProgram {
 	 * @param vertexFile ruta del archivo GLSL vertexShader
 	 * @param fragmentFile ruta del archivo GLSL fragmentShader
 	 */
-	
-	public ShaderProgram(String vertexFile,String fragmentFile){
-		vertexShaderID = loadShader(vertexFile,GL20.GL_VERTEX_SHADER);
-		fragmentShaderID = loadShader(fragmentFile,GL20.GL_FRAGMENT_SHADER);
+	public ShaderProgram(String vertexFile, String fragmentFile){
+		// cargamos los Shader en una identificación única
+		vertexShaderID = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);
+		fragmentShaderID = loadShader(fragmentFile, GL20.GL_FRAGMENT_SHADER);
+		// iniciamos el programa para leer los archivos GLSL
 		programID = GL20.glCreateProgram();
 		GL20.glAttachShader(programID, vertexShaderID);
 		GL20.glAttachShader(programID, fragmentShaderID);
+		// Vinculamos los atributos 
 		bindAttributes();
+		// realizamos el enlace con el ShaderProgram
 		GL20.glLinkProgram(programID);
+		// comprobamos que el programa esté correcto
 		GL20.glValidateProgram(programID);
+		// obtenemos las variables de los Shaders, como las variables Uniforms creadas en los GLSL
 		getAllUniformLocation();
 	}
 
@@ -54,6 +64,12 @@ public abstract class ShaderProgram {
 	 * Método para asegurarnos que todas las variable uniformes han sido ubicadas dentro del programa Shader
 	 */
 	protected abstract void getAllUniformLocation();
+	
+	/**
+	 * Al crear una clase abstracta, cada vez que extendemos esta clase debe tener este método abstracto
+	 */
+	protected abstract void bindAttributes();
+	
 	
 	/**
 	 * Método para obtener ubicación de la variable uniforme
@@ -82,6 +98,16 @@ public abstract class ShaderProgram {
 	 */
 	protected void loadInt(int location, int value) {
 		GL20.glUniform1i(location, value);
+	}
+	
+	/**
+	 * Método para cargar un vector2D, especialmente para las texturas Atlas
+	 * Utilizado para cargar los datos a los Vertex Y fragments Shaders
+	 * @param location 
+	 * @param vector
+	 */
+	protected void load2DVector(int location, Vector2f vector) {
+		GL20.glUniform2f(location, vector.x, vector.y);
 	}
 	
 	/**
@@ -142,11 +168,6 @@ public abstract class ShaderProgram {
 		GL20.glDeleteShader(fragmentShaderID);
 		GL20.glDeleteProgram(programID);
 	}
-	
-	/**
-	 * Al crear una clase abstracta, implementamos esta clase debe tener este método abstracto
-	 */
-	protected abstract void bindAttributes();
 	
 	/**
 	 * Método que enlaza el GLSL con el id del programa Shader

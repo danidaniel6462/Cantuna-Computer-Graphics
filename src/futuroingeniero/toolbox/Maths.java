@@ -17,6 +17,24 @@ import futuroingeniero.entities.Camara;
 public class Maths {
 	
 	/**
+	 * Método para crear una Matriz de Transformación para escalar y trasladar los Gui del Juego 
+	 * @param translation traslación del GUI
+	 * @param scale tamaño del GUI
+	 * @return devuelve una matriz con las transformaciones lista para ser renderizado el GUI
+	 */
+	public static Matrix4f createTransformationMatrix(Vector2f translation, Vector2f scale) {
+		// creamos una matriz nueva
+		Matrix4f matrix = new Matrix4f();
+		// cargamos la matriz identidad
+		matrix.setIdentity();
+		// realiza la traslación
+		Matrix4f.translate(translation, matrix, matrix);
+		// realiza el escalado para la dimensión del GUI
+		Matrix4f.scale(new Vector3f(scale.x, scale.y, 1f), matrix, matrix);
+		return matrix;
+	}
+	
+	/**
 	 * Método matemático para encontrar el baricentro
 	 * Este método obtiene tres valores que forman un triángulo y la posición del jugador
 	 * @param p1 punto 1 del triángulo

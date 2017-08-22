@@ -59,6 +59,11 @@ uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform vec3 luzPosicion;
 
+// número de filas que tiene la textura atlas
+uniform float numeroFilas;
+// variable para calcular el desplazamiento X & Y en la textura Atlas 
+uniform vec2 offset;
+
 uniform float usaFalsaIluminacion;
 
 // densidad de la niebla
@@ -71,7 +76,8 @@ void main(void){
 	vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
 	vec4 positionRelativeToCam = viewMatrix * worldPosition;
 	gl_Position = projectionMatrix * positionRelativeToCam;
-	pass_textureCoords = textureCoords;
+	// calculo para encontrar la textura que le corresponde al objeto
+	pass_textureCoords = (textureCoords / numeroFilas) + offset;
 	
 	// guardamos la normal real del objeto
 	vec3 realNormal = normal;

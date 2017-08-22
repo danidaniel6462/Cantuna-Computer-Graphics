@@ -15,8 +15,10 @@ public class RawModel {
 	/**
 	 * Clase para gestionar los datos de los modelos
 	 * 
-	 * @param vaoID Id del VAO
-	 * @param vertexCount Número de vértices
+	 * @param vaoID Id del VAO que se toma para obtener los datos del modelo para ser renderizados 
+	 * @param vertexCount Número de vértices de los modelos, se necesita saber cuantos vértices
+	 * tiene el modelo ya que utilizamos el método GL11.glDrawElements() que necesita saber el número de vértices para renderizar
+	 * 
 	 */
 	public RawModel(int vaoID, int vertexCount) {
 		this.vaoID = vaoID;

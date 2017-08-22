@@ -10,6 +10,8 @@ import futuroingeniero.models.TexturedModel;
 import futuroingeniero.renderEngine.DisplayManager;
 import futuroingeniero.terrains.Terrain;
 
+import static futuroingeniero.renderEngine.GlobalConstants.*;
+
 /**
  * @author Daniel Loza
  *
@@ -17,21 +19,15 @@ import futuroingeniero.terrains.Terrain;
  * Clase para el movimiento del jugador
  */
 public class Player extends Entity{
-
-	private static final float WALK_SPEED = 20; // velocidad de correr
-	private static final float TURN_SPEED = 160; // Velocidad de giro
-	private static final float GRAVITY = -80; // varibale para simular gravedad en el juego
-	private static final float JUMP_POWER = 30; // poder del salto del jugador
-	private static final float RUN_SPEED = 30; // v del salto del jugador
 	
 	// private static final float TERRAIN_DEPTH = -800; // profundidad del terreno creado para poder colisionar con el borde
 	// private static final float TERRAIN_WIDE = 800; // ancho del terreno creado para poder colisionar con el borde
 	
 	private float currentSpeed = 0; // velocidad actual del jugador incializado en 0 ya que no se mueve
 	private float currenTurnSpeed = 0; // velocidad de la rotación del jugador inicializado en 0 ya que no se mueve
-	private static float upwardsSpeed = 0; // velocidad del movimieto hacia arriba del jugador inicializado en 0 ya que no se mueve y posicionado en 0 en el eje Y
+	private float upwardsSpeed = 0; // velocidad del movimieto hacia arriba del jugador inicializado en 0 ya que no se mueve y posicionado en 0 en el eje Y
 	
-	private static boolean isInAir = false;
+	private boolean isInAir = false;
 	
 	/**
 	 * Constructor de la clase Payer
@@ -43,8 +39,8 @@ public class Player extends Entity{
 	 * @param rotZ variable que incializa la el ángulo de rotación en Z
 	 * @param scale variable que inicializa 
 	 */
-	public Player(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
-		super(model, position, rotX, rotY, rotZ, scale);
+	public Player(TexturedModel model, String nombre, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
+		super(model, nombre, position, rotX, rotY, rotZ, scale);
 	}
 	
 	/**
@@ -108,12 +104,11 @@ public class Player extends Entity{
 	 * Método que salte el jugador
 	 * 
 	 */
-	public static void jump() {
+	public void jump() {
 		// si es verdad que está en el aire, hacer
 		if(!isInAir) {
 			// pega el salto
-			//this.upwardsSpeed = JUMP_POWER;
-			upwardsSpeed = JUMP_POWER;
+			this.upwardsSpeed = JUMP_POWER;
 			// la variable se hace verdadera para que no vuelva a saltar en el aire
 			isInAir = true;
 		}

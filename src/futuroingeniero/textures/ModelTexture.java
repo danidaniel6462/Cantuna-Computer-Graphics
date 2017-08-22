@@ -15,6 +15,8 @@ public class ModelTexture {
 	 * 					  mientras más grande el valor menor será el reflejo en el objeto 3D
 	 * @param reflectivity variable para determinar el brillo del material del objeto 3D
 	 * @param tieneTransparencia variable lógica para saber si la textura tiene transparencia o no
+	 * @param usaFalsaIluminacion variable para definir una falsa iluminación a los objetos texturizados 
+	 * @param numeroFilas valor para una textura atlas, inicializamos en 1, porque suponemos que todas las texturas son atlas de dimensión 1x1
 	 */
 	private int textureID;
 	private float shineDamper = 1;
@@ -22,7 +24,23 @@ public class ModelTexture {
 	
 	private boolean tieneTransparencia = false;
 	private boolean usaFalsaIluminacion = false;
+
+	private int numeroFilas = 1;
 	
+	/**
+	 * @return el numeroColumnas
+	 */
+	public int getNumeroColumnas() {
+		return numeroFilas;
+	}
+
+	/**
+	 * @param numeroColumnas el numeroColumnas a establecer
+	 */
+	public void setNumeroFilas(int numeroColumnas) {
+		this.numeroFilas = numeroColumnas;
+	}
+
 	/**
 	 * @return el usaFalsaIluminacion
 	 */

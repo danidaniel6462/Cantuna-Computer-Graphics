@@ -8,6 +8,8 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.PixelFormat;
 
+import futuroingeniero.gameEditor.Editor;
+
 /**
  * @author Daniel Loza
  * @version 1.0
@@ -17,15 +19,16 @@ import org.lwjgl.opengl.PixelFormat;
  */
 
 public class DisplayManager {
-
-	private static final int WIDTH = 1280;
-	private static final int HEIGHT = 720;
-	private static final int FPS_CAP = 120;
 	
+	// -----------------------------Attributes-------------------------------
+	/**
+	 * @param lastFrameTime Tiempo del ultimo frame
+	 * @param delta Variable auxiliar para actualización
+	 */
 	private static long lastFrameTime;
 	private static float delta;
 	
-	// Métodos públicos
+	//----------------------------Public Methods------------------------------------
 	/**
 	 * Método para crear un Display
 	 * (pantalla para mostrar lo que sucede en el juego)
@@ -38,14 +41,14 @@ public class DisplayManager {
 		
 		// inicializamos el tamaño de la pantalla
 		try {
-			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
+			Display.setDisplayMode(new DisplayMode(GlobalConstants.WIDTH_DISPLAY, GlobalConstants.HEIGHT_DISPLAY));
 			// creación de la pantalla con un formato específico de pixeles
 			// con las versiones que vamos a utilizar de OpenGL
 			
 			Display.create(new PixelFormat(), attribs);
 			//Display.create();
-			Display.setTitle("Cantuña LWJGL Versión " + org.lwjgl.Sys.getVersion());
-			// Display.setParent(Editor.miCanvasOpenGL);
+			Display.setTitle(GlobalConstants.TITULO);
+			Display.setParent(Editor.miCanvasOpenGL);
 			
 		} catch (LWJGLException e) {
 			e.printStackTrace();
@@ -56,7 +59,7 @@ public class DisplayManager {
 		 * inicia en la esquina inferior izquierda hasta la parte superior derecha
 		 * tomando coordenadas 0,0 y ancho y alto
 		 */
-		GL11.glViewport(0, 0, WIDTH, HEIGHT);
+		GL11.glViewport(0, 0, GlobalConstants.WIDTH_DISPLAY, GlobalConstants.HEIGHT_DISPLAY);
 	}
 	
 	/**
@@ -64,7 +67,7 @@ public class DisplayManager {
 	 */
 	public static void updateDisplay() {
 		// para utilizar el método updateDisplay hay que sincronizar la velocidad de actualizaciones por frame
-		Display.sync(FPS_CAP);
+		Display.sync(GlobalConstants.FPS_CAP);
 		// actualizar pantalla 
 		Display.update();
 		

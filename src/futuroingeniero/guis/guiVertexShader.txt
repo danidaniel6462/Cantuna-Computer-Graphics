@@ -1,0 +1,45 @@
+#version 140
+
+// entrada de vector posiciones del GUI que se renderizará
+in vec2 position;
+
+// salida las coordenadas de la textura
+out vec2 textureCoords;
+
+// variable para generar una matriz de transformación para poder mostrar el GUI en la pantalla
+uniform mat4 transformationMatrix;
+
+void main(void){
+
+	// enviamos la posición del GUI en la pantalla con coordenadas solo x, y
+	gl_Position = transformationMatrix * vec4(position, 0.0, 1.0);
+	
+	// vinculamos la textura sobre el modelo
+	/*
+	fórmulas dibujar la textura del Gui en el centro de la pantalla
+	
+	texCoordX = posX + 1 / 2
+	texCoordY = 1 - (posY + 1) / 2
+	
+	   (-1, 1)				  (1, 1)
+	 * 		________________________
+	 * 		|						|
+	 * 		|						|
+	 * 		|						|
+	 * 		|						|
+	 * 		|						|
+	 * 		|						|
+	 * 		|						|
+	 * 		|						|
+	 * 		|						|
+	 *  	-------------------------
+	 *   (-1, -1)				 (1, -1)
+	 
+	 
+	 Después del cálculo se obtiene los datos 
+	 	 (-1, 1)  por (0, 0)			 (1, 1) por (1, 0)
+	 	 (-1, -1) por (0, 1)			 (1, -1) por (1, 1)
+	 
+	*/
+	textureCoords = vec2((position.x + 1.0) / 2.0, 1 - (position.y + 1.0) / 2.0);
+}

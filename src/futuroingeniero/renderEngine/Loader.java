@@ -35,14 +35,14 @@ public class Loader {
 	private List<Integer> textures = new ArrayList<Integer>();
 
 	/**
-	 * Método para cargar los vértices en el VAO
+	 * Método para cargar el modelo a memoria
 	 * 
 	 * En primer lugar guardamos el ID del VAO
 	 * en segudo lugar guardamos en una posición del VAO
 	 * en tercer lugar guardamos los datos de la posición
 	 * en cuarto lugar, desvinculamos el VAO
-	 * @param positions datos vector posición para guardar en el VAO
-	 * @param textureCoords datos coordenadas de textura para guardar en el VAO
+	 * @param positions vector con los vértices posición del modelo para guardar en el VAO
+	 * @param textureCoords coordenadas de textura para guardar en el VAO
 	 * @param normals normales de los objetos para guardar en el VAO
 	 * @param indices índices para dibujar los modelos 3D correctamente
 	 * @return retorna un RawModel para poder ser dibujado en el escenario
@@ -62,6 +62,24 @@ public class Loader {
 		// Desactivamos el VAO que ya lo llenamos
 		unbindVAO();
 		return new RawModel(vaoID, indices.length);
+	}
+	
+	/**
+	 * Cargar al GUI a memoria
+	 * @param posiciones: Posiciones de 
+	 * @return
+	 */
+	public RawModel loadToVAO(float[] posiciones) {
+		// Crea un VAO vacío
+		int vaoID = createVAO();
+		// almacenamos datos en la posición 0 del VAO, con 2 valores (la posición tiene 2 valores X, Y)
+		// la posición es de 2 valores xq es un GUI, sólo se ve en la pantalla
+		this.storeDataInAttributeList(0, 2, posiciones);
+		// Desactivamos el VAO que ya lo llenamos
+		unbindVAO();
+		// el vector de 8 Vértices posición es dividido para 2 porque se utiliza TriangleStrip para renderizar el cuadrado
+		// es decir que solo utilizamos 4 vértices, así que se necesitan solo 4 índices para los GUI
+		return new RawModel(vaoID, posiciones.length / 2);
 	}
 	
 	/**
@@ -105,24 +123,26 @@ public class Loader {
 	/**
 	 * Método para crear el VAO vació y dar un ID
 	 * posteriormente activaremos el VAO creado
-	 * @return vaoID valor de identificación (ID) del VAO
+	 * @return vaoID valor de identificación (ID) del VAO, valor único
 	 */
 	private int createVAO(){
+		// creamos un VAO nuevo para almacenar los datos de una entidad o modelo
 		int vaoID = GL30.glGenVertexArrays();
 		// almacenamos el identificador del VAO para poder liberar memoria posteriormente
 		vaos.add(vaoID);
+		// enlazamos el VAO
 		GL30.glBindVertexArray(vaoID);
-		return vaoID;
+		return vaoID; //ID unico del VAO
 	}
 	
 	/**
-	 * Método que almacenará los datos, através del ID del VAO 
+	 * Método que almacenará los datos, através del ID al VAO 
 	 *
 	 * @param attributeNumber posición en el VAO
 	 * @param data datos del modelo para guardar en el VAO
 	 */
 	private void storeDataInAttributeList(int attributeNumber, int coordinateSize, float[] data) {
-		int vboID = GL15.glGenBuffers();		// creamos un VBO vacio
+		int vboID = GL15.glGenBuffers();		 // Genera un ID para el VBO (Lista de buffers de Datos) unico.
 		// almacenamos el identificador del VBO para poder liberar memoria posteriormente
 		vbos.add(vboID);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID); // vinculamos un nuevo array Buffer con el vbo que hemos creado anteriormente
@@ -140,12 +160,13 @@ public class Loader {
 		 *  @param buffer escribimos el número desde donde empezará la lectura de datos en el array
 		 */
 		GL20.glVertexAttribPointer(attributeNumber, coordinateSize, GL11.GL_FLOAT, false, 0, 0);
-		// una vez utilizado el VBO es necesario desvinular la memoria
+		// Desvinculamos el VBO actual
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 	
 	/**
 	 * Método que desvincula el VAO (libera memoria del computador)
+	 * desvinculamos el Array de Objetos
 	 */
 	private void unbindVAO() {
 		GL30.glBindVertexArray(0);
@@ -153,7 +174,8 @@ public class Loader {
 	
 	/**
 	 * Método para guardar los índices de un modelo 3D
-	 * @param indices 
+	 * Vinculamos los índices del VBO
+	 * @param indices índices del modelo
 	 */
 	private void bindIndicesBuffer(int[] indices) {
 		int vboID = GL15.glGenBuffers();

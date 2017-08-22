@@ -23,8 +23,11 @@ import futuroingeniero.toolbox.Maths;
  * @author Daniel Loza
  * 
  * <h1>Clase EntityRender</h1>
+ * 
  * Clase que renderiza las diferentes entidades o modelos 3D con sus respectivas características
  * en esta clase también se crea una cámara para poder ver el mundo creado con las entidades
+ * <b>Nota:</b>
+ * Esta clase carga los Shader de los modelos, se utiliza una vez que se crean las variables en los GLSL 
  */
 public class EntityRenderer {
 
@@ -81,6 +84,8 @@ public class EntityRenderer {
 		
 		ModelTexture texture = model.getTexture();
 		
+		shader.loadNumeroFilas(texture.getNumeroColumnas());
+		
 		// comprobamos si la textura tiene transparecia,
 		// Si es verdadero deshabilitamos el sacrificio de las caras de la entidad
 		if(texture.isTieneTransparencia()) {
@@ -116,6 +121,7 @@ public class EntityRenderer {
 		Matrix4f transformationMatrix = Maths.createTransformationMatrix(entidad.getPosition(),
 				entidad.getRotX(), entidad.getRotY(), entidad.getRotZ(), entidad.getScale());
 		shader.loadTransformationMatrix(transformationMatrix);
+		shader.loadOffset(entidad.getTextureXOffset(), entidad.getTextureYOffset());
 	}
 	/**
 	 * @deprecated

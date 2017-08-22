@@ -11,8 +11,10 @@ import org.lwjgl.util.vector.Vector3f;
  * @author Daniel Loza
  *
  */
+
 public class Camara {
 
+	// -----------------------------Attributes-------------------------------
 	private float distanciaDesdeJugador = 50;	// distancia entre el jugador y la cámara
 	private float anguloAlrededorJugador = 0;	// ángulo alrededor del jugador
 	
@@ -29,8 +31,7 @@ public class Camara {
 	private float roll; // roll
 	
 	private Player player;
-	
-	// private float speed;
+
 	
 	/**
 	 * Constructor de la clase Cámara
@@ -39,7 +40,6 @@ public class Camara {
 	public Camara(Player player)
 	{
 		this.player = player;
-		//	this.speed = 0.5f;
 	}
 	
 	/**
@@ -117,7 +117,7 @@ public class Camara {
 		// y el eje de la Z apunta hacia abajo como positivo, y como la cámara está tras el personaje es necesario realizar al operación 
 		// contraria para poder realizar el cáculo correcto
 		posicion.x = player.getPosition().x - offsetX; 
-		posicion.y = 5 + player.getPosition().y + verticalDistancia;
+		posicion.y = player.getPosition().y + verticalDistancia + 5; 
 		posicion.z = player.getPosition().z - offsetZ;
 	}
 	
@@ -154,8 +154,11 @@ public class Camara {
 		// alejamos la cámara
 		distanciaDesdeJugador -= zoomLevel;
 		
+		// comprobar que el zoom no se vaya lejos del personaje o está demasiado cerca
 		if(distanciaDesdeJugador < 10) {
 			distanciaDesdeJugador = 10;
+		} else if(distanciaDesdeJugador > 300) {
+			distanciaDesdeJugador = 300;
 		}
 	}
 	
@@ -165,7 +168,7 @@ public class Camara {
 	private void calcularPicado() {
 			float picadoCambio = Mouse.getDY() * 0.1f;
 			picado -= picadoCambio;
-			
+			// Condisionamos el ángulo picado de la cámara al jugador
 			if(picado < 0)
 				picado = 0;
 			else if(picado > 90)

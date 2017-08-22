@@ -16,23 +16,49 @@ import futuroingeniero.models.TexturedModel;
 public class Entity {
 	
 	private TexturedModel model;
+	private String nombre;
 	private Vector3f position;
 	private float rotX, rotY, rotZ;
 	private float scale;
 	
+	private int textureIndex = 0;
+	
 	/**
 	 * Constructor de la clase entidad
 	 * @param model modelo para renderizar
-	 * @param position vecto3 que incializa la posición del modelo
-	 * @param rotX variable que incializa la el ángulo de rotación en X
-	 * @param rotY variable que incializa la el ángulo de rotación en Y
-	 * @param rotZ variable que incializa la el ángulo de rotación en Z
-	 * @param scale variable que inicializa 
+	 * @param nombre nombre de la entidad que se crea
+	 * @param position Vector 3 que incializa la posición del modelo
+	 * @param rotX incializa el ángulo de rotación en X
+	 * @param rotY incializa el ángulo de rotación en Y
+	 * @param rotZ incializa el ángulo de rotación en Z
+	 * @param scale inicializa el valor de la escala del modelo 
 	 */
-
-	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY,
+	public Entity(TexturedModel model, String nombre, Vector3f position, float rotX, float rotY,
 			float rotZ, float scale) {
 		this.model = model;
+		this.nombre = nombre;
+		this.position = position;
+		this.rotX = rotX;
+		this.rotY = rotY;
+		this.rotZ = rotZ;
+		this.scale = scale;
+	}
+	/**
+	 * Constructor de la clase entidad
+	 * @param model modelo para renderizar
+	 * @param nombre nombre de la entidad que se crea
+	 * @param textureIndex índice de la textura que se desea utilizar dentro de la imagen Atlas, los índices van desde 0, 1 ...., n en matriz cuadrada
+	 * @param position Vector 3 que incializa la posición del modelo
+	 * @param rotX incializa el ángulo de rotación en X
+	 * @param rotY incializa el ángulo de rotación en Y
+	 * @param rotZ incializa el ángulo de rotación en Z
+	 * @param scale inicializa el valor de la escala del modelo 
+	 */
+	public Entity(TexturedModel model, String nombre, int textureIndex, Vector3f position, float rotX, float rotY,
+			float rotZ, float scale) {
+		this.model = model;
+		this.nombre = nombre;
+		this.textureIndex = textureIndex;
 		this.position = position;
 		this.rotX = rotX;
 		this.rotY = rotY;
@@ -40,7 +66,31 @@ public class Entity {
 		this.scale = scale;
 	}
 	
+	public float getTextureXOffset() {
+		int columnas = textureIndex % model.getTexture().getNumeroColumnas();
+		return (float) columnas / (float) model.getTexture().getNumeroColumnas();
+	}
+	
+	public float getTextureYOffset() {
+		int filas = textureIndex / model.getTexture().getNumeroColumnas();
+		return (float) filas / (float) model.getTexture().getNumeroColumnas();
+	}
+	
 	 /**
+	 * @return el nombre
+	 */
+	public String getNombre() {
+		return nombre;
+	}
+
+	/**
+	 * @param nombre el nombre a establecer
+	 */
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	/**
 	  * Método Incremento de posición que será capaz de mover la entidad en el mundo
 	  * @param dx Variable para controlar la posición en el eje X
 	  * @param dy Variable para controlar la posición en el eje Y

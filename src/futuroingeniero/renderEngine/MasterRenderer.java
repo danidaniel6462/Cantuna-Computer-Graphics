@@ -21,26 +21,15 @@ import futuroingeniero.shaders.StaticShader;
 import futuroingeniero.shaders.TerrainShader;
 import futuroingeniero.terrains.Terrain;
 
+import static futuroingeniero.renderEngine.GlobalConstants.*;
+
 /**
  * @author Daniel Loza
  * Clase que manejará toda la representación del video juego
  * Procesador Principal
  */
 public class MasterRenderer {
-	
-	/**
-	 * @param FOV ángulo de proyección de la cámara
-	 * @param PLANO_CERCANO plano que está cercano a la cámara, punto en el eje Z
-	 * @param PLANO_LEJANO plano de la profundidad de la cámara.
-	 */
-	private static final float FOV = 70;
-	private static final float PLANO_CERCANO = 0.1f;
-	private static final float PLANO_LEJANO = 1000f;
-	
-	private static final float RED = 146f / 255f;
-	private static final float GREEN = 209f / 255f;
-	private static final float BLUE = 188f / 255f;
-	
+
 	private Matrix4f projectionMatrix;
 	
 	// programa Shader para los modelos 3D

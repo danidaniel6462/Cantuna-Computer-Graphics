@@ -14,6 +14,10 @@ public class Light {
 
 	private Vector3f position;
 	private Vector3f color;
+	// este atributo guardará los coeficientes para la ecuación de atenuación
+	// fórmula: atenuación = a + b*d + c*d^2
+	private Vector3f atenuacion = new Vector3f(1, 0, 0);
+	
 	/**
 	 * Contructor de la Clase Light
 	 * @param position variable para la posición de la luz
@@ -22,6 +26,31 @@ public class Light {
 	public Light(Vector3f position, Vector3f color) {
 		this.position = position;
 		this.color = color;
+	}
+	/**
+	 * Contructor de la Clase Light
+	 * @param position variable para la posición de la luz
+	 * @param color variable para el color de la luz
+	 * @param atenuacion variable que tiene los coeficientes para calcular la atenuación de la luz
+	 * la fórmula que se utiliza es: atenuación = a + b*d + c*d^2
+	 */
+	public Light(Vector3f position, Vector3f color, Vector3f atenuacion) {
+		this.position = position;
+		this.color = color;
+		this.atenuacion = atenuacion;
+	}
+	
+	/**
+	 * @return el atenuacion
+	 */
+	public Vector3f getAtenuacion() {
+		return atenuacion;
+	}
+	/**
+	 * @param atenuacion el atenuacion a establecer
+	 */
+	public void setAtenuacion(Vector3f atenuacion) {
+		this.atenuacion = atenuacion;
 	}
 	/**
 	 * @return the position

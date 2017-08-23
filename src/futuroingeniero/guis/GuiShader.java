@@ -13,8 +13,8 @@ import futuroingeniero.shaders.ShaderProgram;
  */
 public class GuiShader extends ShaderProgram{
 	
-	private static final String VERTEX_FILE = "src/futuroingeniero/guis/guiVertexShader.txt";
-	private static final String FRAGMENT_FILE = "src/futuroingeniero/guis/guiFragmentShader.txt";
+	private static final String VERTEX_FILE = "src/futuroingeniero/guis/guiVertexShader.glsl";
+	private static final String FRAGMENT_FILE = "src/futuroingeniero/guis/guiFragmentShader.glsl";
 	
 	private int location_transformationMatrix;
 

@@ -27,8 +27,8 @@ public class TerrainShader extends ShaderProgram {
 	 * @param location_transformationMatrix guarda la ubicación de la matriz uniforme en un entero para poder ser llamado
 	 */
 	
-	private static final String VERTEX_FILE = "src/futuroingeniero/shaders/terrainVertexShader.txt";
-	private static final String FRAGMENT_FILE = "src/futuroingeniero/shaders/terrainFragmentShader.txt";
+	private static final String VERTEX_FILE = "src/futuroingeniero/shaders/terrainVertexShader.glsl";
+	private static final String FRAGMENT_FILE = "src/futuroingeniero/shaders/terrainFragmentShader.glsl";
 	
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
@@ -43,6 +43,7 @@ public class TerrainShader extends ShaderProgram {
 	private int location_gTexture;
 	private int location_bTexture;
 	private int location_blendMap;
+	private int location_atenuacion[];
 	
 	/**
 	 * Constructor sin parámetros que obtiene la ruta de los archivos Shader.txt
@@ -86,10 +87,12 @@ public class TerrainShader extends ShaderProgram {
 		
 		location_luzPosicion = new int[MAX_LIGHTS];
 		location_luzColor = new int[MAX_LIGHTS];
+		location_atenuacion = new int[MAX_LIGHTS];
 		
 		for(int i = 0; i < MAX_LIGHTS; i++) {
 			location_luzColor[i] = super.getUniformLocation("luzColor[" + i + "]");
 			location_luzPosicion[i] = super.getUniformLocation("luzPosicion[" + i + "]");
+			location_atenuacion[i] = super.getUniformLocation("atenuacion[" + i + "]");
 		}
 		
 	}
@@ -144,9 +147,12 @@ public class TerrainShader extends ShaderProgram {
 			if(i < luces.size()) {
 				super.loadVector(location_luzPosicion[i], luces.get(i).getPosition());
 				super.loadVector(location_luzColor[i], luces.get(i).getColor());
+				super.loadVector(location_atenuacion[i], luces.get(i).getAtenuacion());
 			} else {
 				super.loadVector(location_luzPosicion[i], new Vector3f(0, 0, 0));
 				super.loadVector(location_luzColor[i], new Vector3f(0, 0, 0));
+				// la nueva atenuación será de (1, 0, 0) ya que no se quiere que el shader cometa un error dividiendo para cero (0)
+				super.loadVector(location_atenuacion[i], new Vector3f(1, 0, 0));
 			}
 		}
 	}

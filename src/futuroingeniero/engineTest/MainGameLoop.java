@@ -93,6 +93,7 @@ public class MainGameLoop {
 		ModelData steveData = OBJFileLoader.loadOBJ("luchOvejas");
 		ModelData boxData = OBJFileLoader.loadOBJ("box");
 		ModelData pinoData = OBJFileLoader.loadOBJ("pino");
+		ModelData lamparaData = OBJFileLoader.loadOBJ("lampara");
 		
 		// cargamos los datos de los modelos en los VAO correspondientes a su modelo
 		RawModel stallModel = loader.loadToVAO(stallData.getVertices(), stallData.getTextureCoords(),
@@ -107,6 +108,8 @@ public class MainGameLoop {
 				boxData.getNormals(), boxData.getIndices());
 		RawModel pinoModel = loader.loadToVAO(pinoData.getVertices(), pinoData.getTextureCoords(),
 				pinoData.getNormals(), pinoData.getIndices());
+		RawModel lamparaModel = loader.loadToVAO(lamparaData.getVertices(), lamparaData.getTextureCoords(),
+				lamparaData.getNormals(), lamparaData.getIndices());
 
 		// carga de texturas en el modelo
 		modeloStatic = new TexturedModel(devilModel, new ModelTexture(loader.loadTexture("objetos/bluedevil")));
@@ -117,6 +120,7 @@ public class MainGameLoop {
 		TexturedModel steveTexture = new TexturedModel(steveModel, new ModelTexture(loader.loadTexture("objetos/luchovejasTexture")));
 		TexturedModel boxTexture = new TexturedModel(boxModel, new ModelTexture(loader.loadTexture("objetos/box")));
 		TexturedModel pino = new TexturedModel(pinoModel, new ModelTexture(loader.loadTexture("objetos/pino")));
+		TexturedModel lampara = new TexturedModel(lamparaModel, new ModelTexture(loader.loadTexture("objetos/lampara")));
 
 		ModelTexture arbolLowPolyAtlas = new ModelTexture(loader.loadTexture("objetos/lowPolyTree"));
 		ModelTexture helechoTexturaAtlas = new ModelTexture(loader.loadTexture("objetos/fern"));
@@ -137,6 +141,7 @@ public class MainGameLoop {
 		flower.getTexture().setUsaFalsaIluminacion(true);
 		fern.getTexture().setTieneTransparencia(true);
 		pino.getTexture().setTieneTransparencia(true);
+		lampara.getTexture().setUsaFalsaIluminacion(true);
 
 		Terrain[][] terrain;
 		terrain = new Terrain[2][2];
@@ -183,13 +188,15 @@ public class MainGameLoop {
 		}	
 		
 		for (int i = 0; i < 500; i++) {
+			// árbol chistoso
+			float x = random.nextFloat() * 1600 - 800;
+			float z = random.nextFloat() * -800;
+			terrenoActual = terrain[(int) (x / SIZE_TERRAIN + 1)][(int) (z / SIZE_TERRAIN + 1)];
+			float y = terrenoActual.getHeighOfTerrain(x, z);
+			if(i % 8 == 0) {
+				items.add(new Entity(arbolTextura, "arbol", new Vector3f(x, y, z), 0, 0, 0, 6));	
+			}
 			if(i % 2 == 0) {
-				// árbol chistoso
-				float x = random.nextFloat() * 1600 - 800;
-				float z = random.nextFloat() * -800;
-				terrenoActual = terrain[(int) (x / SIZE_TERRAIN + 1)][(int) (z / SIZE_TERRAIN + 1)];
-				float y = terrenoActual.getHeighOfTerrain(x, z);
-				items.add(new Entity(arbolTextura, "arbol", new Vector3f(x, y, z), 0, 0, 0, 6));
 				x = random.nextFloat() * 1600 - 800;
 				z = random.nextFloat() * -800;
 				terrenoActual = terrain[(int) (x / SIZE_TERRAIN + 1)][(int) (z / SIZE_TERRAIN + 1)];
@@ -211,36 +218,40 @@ public class MainGameLoop {
 	        }
 	    }
 
-
-
 		// Player del videojuego 
-		player = new Player(steveTexture, "lucho", new Vector3f(100, 0, -50), 0, 180, 0, 1f);
+		player = new Player(steveTexture, "lucho", new Vector3f(170, 0, -280), 0, 90, 0, 1f);
 		// creación de la cámara a utilizar
 		Camara camera = new Camara(player);
 
 		// lista de GUI para el videojuego
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
-		GuiTexture gui0 = new GuiTexture(loader.loadTexture("guis/uce"), new Vector2f(0.7f, 0.5f), new Vector2f(0.25f, 0.45f));
+		GuiTexture gui0 = new GuiTexture(loader.loadTexture("guis/uce"), new Vector2f(0.8f, 0.6f), new Vector2f(0.15f, 0.25f));
 		GuiTexture gui1 = new GuiTexture(loader.loadTexture("guis/vida"), new Vector2f(-0.65f, -0.7f), new Vector2f(0.3f, 0.4f));
 		guis.add(gui0);
 		guis.add(gui1);
 
 		// creamos una luz en el escenario
-		//Light luz = new Light(new Vector3f(2000, 2000, 1000), new Vector3f(1, 1, 1));
-		Light luz0 = new Light(new Vector3f(0, 10000, -7000), new Vector3f(1, 1, 1));
 		List<Light> luces = new ArrayList<Light>();
-		luces.add(luz0);
-		luces.add(new Light(new Vector3f(-200, 10, -200), new Vector3f(0.5f, 0, 0)));
-		luces.add(new Light(new Vector3f(200, 10, 200), new Vector3f(0, 0, 0.5f)));
+		//Light luz = new Light(new Vector3f(2000, 2000, 1000), new Vector3f(1, 1, 1));
+		Light sol = new Light(new Vector3f(0, 10000, -7000), new Vector3f(0.4f, 0.4f, 0.4f));
+		luces.add(sol);
+		luces.add(new Light(new Vector3f(185, 9, -293), new Vector3f(2f, 0, 0), new Vector3f(1f, 0.01f, 0.002f)));
+		luces.add(new Light(new Vector3f(370, 17, -300), new Vector3f(0, 2, 2f), new Vector3f(1f, 0.01f, 0.002f)));
+		luces.add(new Light(new Vector3f(293, 7, -305), new Vector3f(2, 2, 0), new Vector3f(1f, 0.01f, 0.002f)));
 		
+		items.add(new Entity(lampara, "lamp", new Vector3f(185, -4.7f, -293), 0, 0, 0, 1));
+		items.add(new Entity(lampara, "lamp", new Vector3f(370, 4.2f, -300), 0, 0, 0, 1));
+		items.add(new Entity(lampara, "lamp", new Vector3f(293, -6.8f, -305), 0, 0, 0, 1));
 		
+		items.add(new Entity(boxTexture, "miCubo", random.nextInt(4), new Vector3f(0, 0, 0), 0, 0, 0, 0.6f));
+
 		// bucle del juego real
 		// donde ocurren todas las actualizaciones
 		while (!Display.isCloseRequested()) {
 			// game logic
 			diablillos.increaseRotation(0, 1, 0);
 			renderer.controlesRenderizacion();
-			camera.move();
+			camera.move();	
 			
 			int gridX = (int) (player.getPosition().x / SIZE_TERRAIN + 1);
 			int gridZ = (int) (player.getPosition().z / SIZE_TERRAIN + 1);

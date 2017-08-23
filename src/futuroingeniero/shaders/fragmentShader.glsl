@@ -11,6 +11,8 @@ out vec4 salida_Color;
 uniform sampler2D muestreoTextura;
 // color de cada una de las cuatro luces
 uniform vec3 luzColor[4];
+// se utiliza 4 valores de atenuación, uno por cada luz creada
+uniform vec3 atenuacion[4];
 uniform float shineDamper;
 uniform float reflectivity; 
 // vec3 uniforme ya que a futuro será necesario ya que cambiaremos el día a la noche
@@ -28,6 +30,9 @@ void main(void){
 	
 	// Se realiza 4 veces el cálculo para las luces en el escenario 
 	for(int i = 0; i < 4; i++){
+		// distancia de la luz al objeto
+		float distancia = length(toLightVector[i]);
+		float atenuacionFactor = atenuacion[i].x + (atenuacion[i].y * distancia) + (atenuacion[i].z * distancia * distancia);
 		vec3 unitarioLuzVector = normalize(toLightVector[i]);	
 		// realizamos el cálculos producto escalar o DOT entre los dos vectores normalizados
 		// este cálculo se realiza para que cada píxel represente la intensidad de la luz
@@ -41,8 +46,8 @@ void main(void){
 		float damperFactor = pow(specularFactor, shineDamper);
 		// multiplicamos el factor brillo por el color de la luz para obtener el color e intensidad final de cada pixel
 		// lo que hace el GLSL es calcular la luz difusa y especular causada por cada una de las luces
-		totalDiffuse = totalDiffuse  + brillo * luzColor[i];
-		totalSpecular = totalSpecular + damperFactor * reflectivity * luzColor[i];
+		totalDiffuse = totalDiffuse  + (brillo * luzColor[i]) / atenuacionFactor;
+		totalSpecular = totalSpecular + (damperFactor * reflectivity * luzColor[i]) / atenuacionFactor;
 	}
 	
 	// tomamos valores entre la luz Difusa y 0.2 para asegurarnos que ninguna cara del modelo sea oscuro o negra, así se le da un color oscuro claro jeje, (yo me entiendo)

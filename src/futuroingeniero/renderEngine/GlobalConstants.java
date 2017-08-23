@@ -3,6 +3,8 @@
  */
 package futuroingeniero.renderEngine;
 
+import org.lwjgl.opengl.GL11;
+
 /**
  * @author Daniel Loza
  *
@@ -15,7 +17,7 @@ public class GlobalConstants {
 	 * Variables globales para el videojuego
 	 */
 	//------------------------Display en Clase DisplayManager----------------------------
-	public static final String TITULO = "Cantuña LWJGL Versión " + org.lwjgl.Sys.getVersion();
+	public static final String TITULO = "Cantuña LWJGL Versión " + org.lwjgl.Sys.getVersion() + " OpenGL Versión " + GL11.glGetString(GL11.GL_VERSION);
 	public static final int WIDTH_DISPLAY = 1280;
 	public static final int HEIGHT_DISPLAY = 720;
 	public static final int FPS_CAP = 120; 
@@ -44,9 +46,9 @@ public class GlobalConstants {
 	public static final float MAX_PIXEL_COLOR = 256 * 256 * 256;
 	
 	//------------------------Background Display en Clase MasterRenderer------------------------------
-	public static final float RED =  200f / 255f;// 146f / 255f;
-	public static final float GREEN = 200f / 255f; // 209f / 255f; 
-	public static final float BLUE =  200f / 255f;	// 188f / 255f; 
+	public static final float RED =  100f / 255f;// 146f / 255f;
+	public static final float GREEN = 100f / 255f; // 209f / 255f; 
+	public static final float BLUE =  100f / 255f;	// 188f / 255f; 
 	
 	//------------------------Player en Clase Player------------------------------
 	public static final float WALK_SPEED = 20; // velocidad de caminar o trotar como yo lo llamo jeje

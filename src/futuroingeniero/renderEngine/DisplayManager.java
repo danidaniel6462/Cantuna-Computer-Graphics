@@ -22,7 +22,7 @@ public class DisplayManager {
 	
 	// -----------------------------Attributes-------------------------------
 	/**
-	 * @param lastFrameTime Tiempo del ultimo frame
+	 * @param lastFrameTime Tiempo del último frame
 	 * @param delta Variable auxiliar para actualización
 	 */
 	private static long lastFrameTime;
@@ -44,12 +44,10 @@ public class DisplayManager {
 			Display.setDisplayMode(new DisplayMode(GlobalConstants.WIDTH_DISPLAY, GlobalConstants.HEIGHT_DISPLAY));
 			// creación de la pantalla con un formato específico de pixeles
 			// con las versiones que vamos a utilizar de OpenGL
-			
 			Display.create(new PixelFormat(), attribs);
 			//Display.create();
 			Display.setTitle(GlobalConstants.TITULO);
 			Display.setParent(Editor.miCanvasOpenGL);
-			
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}

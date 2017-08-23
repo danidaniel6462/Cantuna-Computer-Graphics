@@ -31,7 +31,6 @@ public class Editor extends JFrame {
 	public static void main(String[] args) {
 		start();
 		MainGameLoop.run();
-
 		// se debe crear un hilo separado para ejecutar el juego y la interfaz gráfica al mismo tiempo
 		// en un futuro me plantearé hacer el Thread por separado
 	}

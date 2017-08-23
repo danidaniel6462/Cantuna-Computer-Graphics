@@ -33,8 +33,8 @@ public class StaticShader extends ShaderProgram{
 	 * 3. Se crea un método para cargar los datos del CPU para el archivo VertexShader
 	 */
 	
-	private static final String VERTEX_FILE = "src/futuroingeniero/shaders/vertexShader.txt";
-	private static final String FRAGMENT_FILE = "src/futuroingeniero/shaders/fragmentShader.txt";
+	private static final String VERTEX_FILE = "src/futuroingeniero/shaders/vertexShader.glsl";
+	private static final String FRAGMENT_FILE = "src/futuroingeniero/shaders/fragmentShader.glsl";
 	
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
@@ -47,6 +47,7 @@ public class StaticShader extends ShaderProgram{
 	private int location_cieloColor;
 	private int location_numeroFilas;
 	private int location_offset;
+	private int location_atenuacion[];
 	
 	/**
 	 * Constructor sin parámetros que recibe la ruta de los archivos Shader.txt
@@ -86,10 +87,12 @@ public class StaticShader extends ShaderProgram{
 		
 		location_luzPosicion = new int[MAX_LIGHTS];
 		location_luzColor = new int[MAX_LIGHTS];
+		location_atenuacion = new int[MAX_LIGHTS];
 		
 		for(int i = 0; i < MAX_LIGHTS; i++) {
 			location_luzColor[i] = super.getUniformLocation("luzColor[" + i + "]");
 			location_luzPosicion[i] = super.getUniformLocation("luzPosicion[" + i + "]");
+			location_atenuacion[i] = super.getUniformLocation("atenuacion[" + i + "]");
 		}
 
 	}
@@ -160,9 +163,12 @@ public class StaticShader extends ShaderProgram{
 			if(i < luces.size()) {
 				super.loadVector(location_luzPosicion[i], luces.get(i).getPosition());
 				super.loadVector(location_luzColor[i], luces.get(i).getColor());
+				super.loadVector(location_atenuacion[i], luces.get(i).getAtenuacion());
 			} else {
 				super.loadVector(location_luzPosicion[i], new Vector3f(0, 0, 0));
 				super.loadVector(location_luzColor[i], new Vector3f(0, 0, 0));
+				// la nueva atenuación será de (1, 0, 0) ya que no se quiere que el shader cometa un error dividiendo para cero (0)
+				super.loadVector(location_atenuacion[i], new Vector3f(1, 0, 0));
 			}
 		}
 	}

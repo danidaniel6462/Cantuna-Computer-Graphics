@@ -39,7 +39,7 @@ public class Light {
 		this.color = color;
 		this.atenuacion = atenuacion;
 	}
-	
+
 	/**
 	 * @return el atenuacion
 	 */

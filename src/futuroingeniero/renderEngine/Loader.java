@@ -4,6 +4,7 @@
 package futuroingeniero.renderEngine;
 
 import java.io.FileInputStream;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -11,6 +12,8 @@ import java.util.List;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -18,7 +21,10 @@ import org.lwjgl.opengl.GL30;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
+import de.matthiasmann.twl.utils.PNGDecoder;
+import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import futuroingeniero.models.RawModel;
+import futuroingeniero.textures.TextureData;
 
 /**
  * @author Daniel Loza
@@ -65,21 +71,25 @@ public class Loader {
 	}
 	
 	/**
-	 * Cargar al GUI a memoria
-	 * @param posiciones: Posiciones de 
-	 * @return
+	 * Cargar al GUI y/o SkyBox a memoria del VAO
+	 * 
+	 * @param posiciones: Posiciones de
+	 * @param dimensiones: valor que indica si vamos a renderizar un GUI o un SkyBox
+	 *			siendo: dimensiones = 2, para cargar un modelo 2D, GUI
+	 *				 	dimensiones = 3, para cargar un modelo 3D, SkyBox
+	 * @return devuelve un RawModel para poder utilizarlo en los GUI o el SkyBox
 	 */
-	public RawModel loadToVAO(float[] posiciones) {
+	public RawModel loadToVAO(float[] posiciones, int dimensiones) {
 		// Crea un VAO vacío
 		int vaoID = createVAO();
 		// almacenamos datos en la posición 0 del VAO, con 2 valores (la posición tiene 2 valores X, Y)
 		// la posición es de 2 valores xq es un GUI, sólo se ve en la pantalla
-		this.storeDataInAttributeList(0, 2, posiciones);
+		this.storeDataInAttributeList(0, dimensiones, posiciones);
 		// Desactivamos el VAO que ya lo llenamos
 		unbindVAO();
 		// el vector de 8 Vértices posición es dividido para 2 porque se utiliza TriangleStrip para renderizar el cuadrado
 		// es decir que solo utilizamos 4 vértices, así que se necesitan solo 4 índices para los GUI
-		return new RawModel(vaoID, posiciones.length / 2);
+		return new RawModel(vaoID, posiciones.length / dimensiones);
 	}
 	
 	/**
@@ -121,6 +131,83 @@ public class Loader {
 	}
 	
 	/**
+	 * Mñetodo para cargar un CubeMap
+	 *  para utilizarlo en el SkyBox
+	 * @param textureFiles Arreglo de Strings que contiene los nombre de los seis archivos que formarán el CubeMpa para el Skybox
+	 * @return devuleve la identificación del CubeMap para utilizarlo en el Skybox del videojuego
+	 */
+	public int loadCubeMap(String[] textureFiles) {
+		// generar una textura completamente vacía para openGL 
+		int texID = GL11.glGenTextures();
+		// activamos la textura, demodo que se pueda utilizar la información de las textura como mejor convenga
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		// utiilzamos la información del id de la textura generada para vincular con datos para el CubeMap
+		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texID);
+		for(int i = 0; i < textureFiles.length; i++) {
+			TextureData data = decodeTextureFile("res/texturas/skybox/" + textureFiles[i] + ".png");
+			// cargamos los datos de las  texturas al CubeMap como imagenes 2D
+			/**
+			 * glTexImage2D, parámetros
+			 * 1: target: es la cara del CubeMap que se quiere cargar la textura
+			 * 2: level: 0
+			 * 3: internalFormat: formato que queremos almacenar los datos, las caras son enteros consecutivos que se pueden recorrer fácilmente en el bucle
+			 * 4: width: ancho de la textura
+			 * 5: height: alto de la textura
+			 * 6: border: frontera de la textura, valor 0, porque no es necesario un borde en las texturas
+			 * 7: format: nuevo formato de datos
+			 * 8: type: el tipo de datos, asignamos los bites sin signo
+			 * 9: píxeles: Número de datos que tenemos en el buffer de la textura
+			 */
+			GL11.glTexImage2D(GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL11.GL_RGBA,
+					data.getWidth(), data.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
+					data.getBuffer());
+		}
+		// suavizamos la textura con GL_TEXTURE_MAG_FILTER y GL_TEXTURE_MAG_FILTER, convirtiendo en una suavidad Lineal con GL_LINEAR 
+		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+		// finalmente se añade a la lista con el objetivo de que se libere la memoria una vez cerrado el juego
+		textures.add(texID);
+		return texID;
+	}
+	
+	/**
+	 * Método que carga una imagen a la memoria para decodificarlo para posteriormente utilizarlo para un SkyBox
+	 * utilizado para cargar las imágenes en objetos de datos de textura que lo convierte en una textura suficientemente grande para no perder resolución de la textura 
+	 * @param fileName
+	 * @return devuelve como un objeto de datos de textura para el SkyBox, almacenando el buffer de datos, el ancho y alto 
+	 */
+	private TextureData decodeTextureFile(String fileName) {
+		// ancho de la imagen
+		int width = 0;
+		// alto de la imagen
+		int height = 0;
+		// creación de un byteBuffer
+		ByteBuffer buffer = null;
+		try {
+			// obteniendo el archivo
+			FileInputStream in = new FileInputStream(fileName);
+			// decodificando la imagen 
+			PNGDecoder decoder = new PNGDecoder(in);
+			// ancho y alto de la imagen decodificada
+			width = decoder.getWidth();
+			height = decoder.getHeight();
+			// tamaño del buffer 
+			buffer = ByteBuffer.allocateDirect(4 * width * height);
+			decoder.decode(buffer, width * 4, Format.RGBA);
+			buffer.flip();
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("\nPruebe a cargar bien la textura " + fileName + ", no funciona!!");
+			System.exit(-1);
+		}
+		// devuleve como un objeto de datos de textura
+		return new TextureData(buffer, width, height);
+	}
+	
+	/**
 	 * Método para crear el VAO vació y dar un ID
 	 * posteriormente activaremos el VAO creado
 	 * @return vaoID valor de identificación (ID) del VAO, valor único
@@ -159,6 +246,13 @@ public class Loader {
 		 *  @param stride separación entre los datos que va a obtener del arreglo, utilizamos 0
 		 *  @param buffer escribimos el número desde donde empezará la lectura de datos en el array
 		 */
+		//Asignamos el VBO al VAO 
+		//1) Posición que ocupará el VBO en el VAO
+		//2) Tamaño del objeto (X,Y,Z)
+		//3) Tipo de datos a alamacenar (floats)
+		//4) Normalizar la info (Apuntar a una misma direccion)
+		//5) Distancia entre puntos
+		//6) Compensar información
 		GL20.glVertexAttribPointer(attributeNumber, coordinateSize, GL11.GL_FLOAT, false, 0, 0);
 		// Desvinculamos el VBO actual
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);

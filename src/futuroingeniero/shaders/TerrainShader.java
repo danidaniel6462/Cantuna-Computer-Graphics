@@ -158,7 +158,7 @@ public class TerrainShader extends ShaderProgram {
 	}
 	
 	/**
-	 * Método para cargar la vista de la cámara
+	 * Método para cargar la matriz del punto de vista hacia la cámara
 	 * @param camera variable que carga la cámara para determinar la vista que va a tener la cámara 
 	 */
 	public void loadViewMatrix(Camara camera) {

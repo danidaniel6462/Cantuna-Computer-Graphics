@@ -1,4 +1,4 @@
-#version 140
+#version 400
 
 in vec2 textureCoords;
 
@@ -8,6 +8,5 @@ uniform sampler2D guiTexture;
 
 void main(void){
 
-	out_Color = texture(guiTexture,textureCoords);
-
+	out_Color = texture(guiTexture, textureCoords);
 }

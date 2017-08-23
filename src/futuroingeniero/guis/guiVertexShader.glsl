@@ -1,4 +1,4 @@
-#version 140
+#version 400
 
 // entrada de vector posiciones del GUI que se renderizará
 in vec2 position;

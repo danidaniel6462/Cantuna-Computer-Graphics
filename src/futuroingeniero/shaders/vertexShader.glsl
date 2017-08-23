@@ -72,7 +72,7 @@ uniform vec2 offset;
 
 uniform float usaFalsaIluminacion;
 
-// densidad de la niebla
+// densidad de la niebla 0.0035
 const float density = 0.0035;
 // gradiente de niebla
 const float gradient = 5.0;

@@ -66,28 +66,21 @@ public class Entity {
 		this.scale = scale;
 	}
 	
+	/**
+	 * Método para obtener el desplazamiento en X para una textura Atlas
+	 * @return devuelve desplazamientoX
+	 */
 	public float getTextureXOffset() {
 		int columnas = textureIndex % model.getTexture().getNumeroColumnas();
 		return (float) columnas / (float) model.getTexture().getNumeroColumnas();
 	}
-	
+	/**
+	 * Método para obtener el desplazamiento en Y para una textura Atlas
+	 * @return devuelve desplazamientoY
+	 */
 	public float getTextureYOffset() {
 		int filas = textureIndex / model.getTexture().getNumeroColumnas();
 		return (float) filas / (float) model.getTexture().getNumeroColumnas();
-	}
-	
-	 /**
-	 * @return el nombre
-	 */
-	public String getNombre() {
-		return nombre;
-	}
-
-	/**
-	 * @param nombre el nombre a establecer
-	 */
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
 	}
 
 	/**
@@ -198,6 +191,17 @@ public class Entity {
 		this.scale = scale;
 	}
 	
-	
+	 /**
+	 * @return el nombre
+	 */
+	public String getNombre() {
+		return nombre;
+	}
 
+	/**
+	 * @param nombre el nombre a establecer
+	 */
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 }

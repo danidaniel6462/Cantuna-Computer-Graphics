@@ -62,41 +62,6 @@ public class Terrain {
 		this.z = gridZ * SIZE_TERRAIN;
 		this.model = generateTerrain(loader, heightMap);
 	}
-
-	/**
-	 * @return el x
-	 */
-	public float getX() {
-		return x;
-	}
-
-	/**
-	 * @return el z
-	 */
-	public float getZ() {
-		return z;
-	}
-
-	/**
-	 * @return el model
-	 */
-	public RawModel getModel() {
-		return model;
-	}
-
-	/**
-	 * @return el texturePack
-	 */
-	public TerrainTexturePack getTexturePack() {
-		return texturePack;
-	}
-
-	/**
-	 * @return el blendMap
-	 */
-	public TerrainTexture getBlendMap() {
-		return blendMap;
-	}
 	
 	/**
 	 * Método que obtiene una coordenada X, Z y devuelve la coordenada en Y 
@@ -245,4 +210,39 @@ public class Terrain {
 		return height;
 	}
 
+	/**
+	 * @return el x
+	 */
+	public float getX() {
+		return x;
+	}
+
+	/**
+	 * @return el z
+	 */
+	public float getZ() {
+		return z;
+	}
+
+	/**
+	 * @return el model
+	 */
+	public RawModel getModel() {
+		return model;
+	}
+
+	/**
+	 * @return el texturePack
+	 */
+	public TerrainTexturePack getTexturePack() {
+		return texturePack;
+	}
+
+	/**
+	 * @return el blendMap
+	 */
+	public TerrainTexture getBlendMap() {
+		return blendMap;
+	}
+	
 }

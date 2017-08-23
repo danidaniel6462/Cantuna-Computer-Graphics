@@ -20,8 +20,8 @@ import static futuroingeniero.renderEngine.GlobalConstants.*;
  */
 public class Player extends Entity{
 	
-	private static final float TERRAIN_DEPTH = -800; // profundidad del terreno creado para poder colisionar con el borde
-	private static final float TERRAIN_WIDE = 800; // ancho del terreno creado para poder colisionar con el borde
+	//private static final float TERRAIN_DEPTH = -800; // profundidad del terreno creado para poder colisionar con el borde
+	//private static final float TERRAIN_WIDE = 800; // ancho del terreno creado para poder colisionar con el borde
 	
 	private float currentSpeed = 0; // velocidad actual del jugador incializado en 0 ya que no se mueve
 	private float currenTurnSpeed = 0; // velocidad de la rotación del jugador inicializado en 0 ya que no se mueve
@@ -30,7 +30,7 @@ public class Player extends Entity{
 	private boolean isInAir = false;
 	
 	/**
-	 * Constructor de la clase Payer
+	 * Constructor de la clase Player
 	 * Este método es igual al de la clase Entidad ya que se extiende de la Clase Entity
 	 * @param model modelo para renderizar
 	 * @param position vecto3 que incializa la posición del modelo
@@ -82,7 +82,7 @@ public class Player extends Entity{
 			super.getPosition().y = terrainHeight;
 		}
 		
-		
+		/*
 		// colisión con los bordes del terreno
 		if(super.getPosition().z > TERRAIN_DEPTH - TERRAIN_DEPTH) { 
 			super.setPosition(new Vector3f(super.getPosition().x, super.getPosition().y, 0));
@@ -95,7 +95,7 @@ public class Player extends Entity{
 		} else if(super.getPosition().x < -TERRAIN_WIDE) {
 			super.setPosition(new Vector3f(-TERRAIN_WIDE, super.getPosition().y, super.getPosition().z));
 		} 
-		
+		*/
 		
 		
 	}

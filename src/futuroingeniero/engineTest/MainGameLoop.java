@@ -3,6 +3,8 @@
  */
 package futuroingeniero.engineTest;
 
+import static futuroingeniero.renderEngine.GlobalConstants.SIZE_TERRAIN;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -30,8 +32,6 @@ import futuroingeniero.textures.ModelTexture;
 import futuroingeniero.textures.TerrainTexture;
 import futuroingeniero.textures.TerrainTexturePack;
 
-import static futuroingeniero.renderEngine.GlobalConstants.*;
-
 /**
  * @author Daniel Loza
  * @version 1.0
@@ -42,35 +42,17 @@ public class MainGameLoop {
 	// private static int index = 0;
 	
 	private static Random random = new Random();
-	private static List<Entity> diablillo = new ArrayList<Entity>();
+	private static List<Entity> diablillos = new ArrayList<Entity>();
 	private static TexturedModel modeloStatic;
 	
+	private static Terrain[][] terrain;
+	
 	public static Player player;
-	
-	/**
-	 * Método principal que se ejecuta para iniciar la aplicación
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		MainGameLoop.run();	
-	}
-	
-	/**
-	 * Método que ejecuta el juego 
-	 */
-	public static void run() {
-		// creamos la pantalla para visualizar lo que pasa en el juego
-		DisplayManager.createDisplay();
-		// loop del juego
-		gameLoop();
-		// terminamos la ejecución del juego
-		DisplayManager.closeDisplay();
-	}
 
 	public static void gameLoop() {
 		// objeto para cargar los modelos en memoria para posteriormente ser renderizados
 		Loader loader = new Loader();
-		MasterRenderer renderer = new MasterRenderer();
+		MasterRenderer renderer = new MasterRenderer(loader);
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
 		
 		// ****** texturas para el blendMap********//
@@ -143,7 +125,7 @@ public class MainGameLoop {
 		pino.getTexture().setTieneTransparencia(true);
 		lampara.getTexture().setUsaFalsaIluminacion(true);
 
-		Terrain[][] terrain;
+		
 		terrain = new Terrain[2][2];
 		terrain[0][0] = new Terrain(-1, -1, loader, texturePack, blendMap, "heightmap");
 		terrain[1][0] = new Terrain(0, -1, loader, texturePack, miBlendMap, "heightmap");
@@ -160,9 +142,12 @@ public class MainGameLoop {
 		List<Entity> items = new ArrayList<Entity>();
 		
 		// las entidades son los modelos 3D que cargamos en el escenario
-		Entity diablillos = new Entity(modeloStatic, "diablillo", new Vector3f(10, 0, -20), 0, 0, 0, 1);
+		Entity diablillo = new Entity(modeloStatic, "diablillo", new Vector3f(10, 0, -20), 0, 0, 0, 1);
 		Entity entidadStall = new Entity(staticModelStall, "bar", new Vector3f(-5, 0, -20), 0, 0, 0, 1);
-		diablillo.add(diablillos);
+		
+		items.add(entidadStall);
+		
+		diablillos.add(diablillo);
 		
 		for (int i = 0; i < 1000; i++) {
 			if (i % 3 == 0) {
@@ -235,26 +220,27 @@ public class MainGameLoop {
 		//Light luz = new Light(new Vector3f(2000, 2000, 1000), new Vector3f(1, 1, 1));
 		Light sol = new Light(new Vector3f(0, 10000, -7000), new Vector3f(0.4f, 0.4f, 0.4f));
 		luces.add(sol);
-		luces.add(new Light(new Vector3f(185, 9, -293), new Vector3f(2f, 0, 0), new Vector3f(1f, 0.01f, 0.002f)));
-		luces.add(new Light(new Vector3f(370, 17, -300), new Vector3f(0, 2, 2f), new Vector3f(1f, 0.01f, 0.002f)));
+		luces.add(new Light(new Vector3f(185, 10, -293), new Vector3f(2f, 0, 0), new Vector3f(1f, 0.01f, 0.002f)));
+		luces.add(new Light(new Vector3f(370, 18, -300), new Vector3f(0, 2, 2f), new Vector3f(1f, 0.01f, 0.002f)));
 		luces.add(new Light(new Vector3f(293, 7, -305), new Vector3f(2, 2, 0), new Vector3f(1f, 0.01f, 0.002f)));
 		
 		items.add(new Entity(lampara, "lamp", new Vector3f(185, -4.7f, -293), 0, 0, 0, 1));
 		items.add(new Entity(lampara, "lamp", new Vector3f(370, 4.2f, -300), 0, 0, 0, 1));
 		items.add(new Entity(lampara, "lamp", new Vector3f(293, -6.8f, -305), 0, 0, 0, 1));
 		
-		items.add(new Entity(boxTexture, "miCubo", random.nextInt(4), new Vector3f(0, 0, 0), 0, 0, 0, 0.6f));
+		items.add(new Entity(boxTexture, "miCubo", new Vector3f(0, 0, 0), 0, 0, 0, 0.6f));
 
+		int gridX, gridZ;
 		// bucle del juego real
 		// donde ocurren todas las actualizaciones
 		while (!Display.isCloseRequested()) {
 			// game logic
-			diablillos.increaseRotation(0, 1, 0);
+			diablillo.increaseRotation(0, 1, 0);
 			renderer.controlesRenderizacion();
 			camera.move();	
 			
-			int gridX = (int) (player.getPosition().x / SIZE_TERRAIN + 1);
-			int gridZ = (int) (player.getPosition().z / SIZE_TERRAIN + 1);
+			gridX = (int) (player.getPosition().x / SIZE_TERRAIN + 1);
+			gridZ = (int) (player.getPosition().z / SIZE_TERRAIN + 1);
 			player.move(terrain[gridX][gridZ], entidadStall);
 
 		    for (Entity item : items) {
@@ -262,23 +248,16 @@ public class MainGameLoop {
 		        	item.increaseRotation(0, 1, 0);
 		        }
 		    }
-		    
-			for (Terrain terreno : terrenos) {
-				renderer.procesarTerreno(terreno);
-			}
 			renderer.procesarEntidad(player);
-			renderer.procesarEntidad(entidadStall);
 
 			// render
-			renderer.render(luces, camera);
+			renderer.render(items, terrenos, luces, camera);
 			
-			for (Entity item : items) {
-				renderer.procesarEntidad(item);
-			}
 			guiRenderer.render(guis);
 			// diablillo
-			for (Entity diablito : diablillo) {
+			for (Entity diablito : diablillos) {
 				renderer.procesarEntidad(diablito);
+				diablito.increaseRotation(0, 1, 0);
 			}
 
 			DisplayManager.updateDisplay();
@@ -292,33 +271,32 @@ public class MainGameLoop {
 	// creado para posteriormente crear una interfaz para realizar el mismo
 	// procedimiento
 	public static void crearEntidad() {
-		
+
 		float x = random.nextFloat() * 100 - 50;
 		float z = random.nextFloat() * -300;
-		diablillo.add(new Entity(modeloStatic, "diablillo", new Vector3f(x, 0, z), 0, random.nextFloat() * 360, 0, 1f));
+		diablillos.add(new Entity(modeloStatic, "diablillo", new Vector3f(x, 0, z), 0, random.nextFloat() * 360, 0, 1f));
 		
 		/*
-		 * while (Keyboard.next()) {
+		 * 
+		while (Keyboard.next()) {
 		 
 			if (Keyboard.getEventKeyState()) {
 				if (Keyboard.isKeyDown(Keyboard.KEY_RETURN)) {
 					System.out.println("ENTER KEY IS PRESSED");
 					float x = random.nextFloat() * 100 - 50;
 					float z = random.nextFloat() * -300;
-					diablillo.add(new Entity(modeloStatic, "diablillo", new Vector3f(x, 0, z), 0, random.nextFloat() * 360, 0, 1f));
-					System.out.println("Array Gaviotas tamaño: " + diablillo.size());
+					int gridX = (int) (x / SIZE_TERRAIN + 1);
+					int gridZ = (int) (z / SIZE_TERRAIN + 1);
+					float y = terrain[gridX][gridZ].getHeighOfTerrain(x, z);
+					diablillos.add(new Entity(modeloStatic, "diablillo", new Vector3f(x, 0, z), 0, random.nextFloat() * 360, 0, 1f));
+					System.out.println("Array Diablillos tamaño: " + diablillos.size());
 				}
 				if (Keyboard.getEventKey() == Keyboard.KEY_UP) {
 					System.out.println("UP Key is pressed");
-					index += 1;
-					System.out.println("index: " + index);
 				}
 				
 				if (Keyboard.getEventKey() == Keyboard.KEY_RCONTROL) {
 					System.out.println("SPACE Key is pressed");
-					diablillo.remove(index);
-					System.out.println("Gaviota eliminada num: " + index);
-					System.out.println("nuevo tamaño de Gaviotas: " + diablillo.size());
 				}
 			} else {
 				if (Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
@@ -333,5 +311,25 @@ public class MainGameLoop {
 			}
 		}
 		*/
+		
+	}
+	/**
+	 * Método principal que se ejecuta para iniciar la aplicación
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		MainGameLoop.run();	
+	}
+	
+	/**
+	 * Método que ejecuta el juego 
+	 */
+	public static void run() {
+		// creamos la pantalla para visualizar lo que pasa en el juego
+		DisplayManager.createDisplay();
+		// loop del juego
+		gameLoop();
+		// terminamos la ejecución del juego
+		DisplayManager.closeDisplay();
 	}
 }

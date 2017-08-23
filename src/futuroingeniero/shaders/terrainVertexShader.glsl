@@ -58,7 +58,7 @@ uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform vec3 luzPosicion[4];
 
-// densidad de la niebla
+// densidad de la niebla:   0.0035
 const float density = 0.0035;
 // gradiente de niebla
 const float gradient = 5.0;
@@ -87,5 +87,4 @@ void main(void){
 	visibilidad = exp(-pow((distancia * density), gradient));
 	// el resultado de la visibilidad está entre 0 y 1 utilizamos la función clamp para calcular todos los valores entre 0 y 1
 	visibilidad = clamp(visibilidad, 0.0, 1.0);
-	
 }

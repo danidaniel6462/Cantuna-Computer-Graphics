@@ -3,6 +3,8 @@
  */
 package futuroingeniero.renderEngine;
 
+import static futuroingeniero.renderEngine.GlobalConstants.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,9 +21,8 @@ import futuroingeniero.entities.Light;
 import futuroingeniero.models.TexturedModel;
 import futuroingeniero.shaders.StaticShader;
 import futuroingeniero.shaders.TerrainShader;
+import futuroingeniero.skybox.SkyBoxRenderer;
 import futuroingeniero.terrains.Terrain;
-
-import static futuroingeniero.renderEngine.GlobalConstants.*;
 
 /**
  * @author Daniel Loza
@@ -46,16 +47,19 @@ public class MasterRenderer {
 	private Map<TexturedModel, List<Entity>> entidades = new HashMap<TexturedModel, List<Entity>>();
 	private List<Terrain> terrains = new ArrayList<Terrain>();
 	
+	private SkyBoxRenderer syboxRenderer;
+	
 	/**
 	 * Constructor de la Clase MasterRenderer
 	 */
-	public MasterRenderer() {
+	public MasterRenderer(Loader loader) {
 		// activamos la renderizaciónm de las caras que se ven, pero en este caso sacrificamos la parte posterior de las caras que no se ven
 		// sacrificamos las caras posteriores
 		enableCulling();
 		createProjectionMatrix();
 		renderer = new EntityRenderer(shader, projectionMatrix);
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+		syboxRenderer = new SkyBoxRenderer(loader, projectionMatrix);
 	}
 	
 	/**
@@ -76,7 +80,13 @@ public class MasterRenderer {
 	 * @param sol variable para iluminar la escena
 	 * @param camara proyección de la cámara y ubicación de la misma 
 	 */
-	public void render(List<Light> luces, Camara camara) {
+	public void render(List<Entity> items, List<Terrain> terrenos, List<Light> luces, Camara camara) {
+		for (Entity item : items) {
+			procesarEntidad(item);
+		}
+		for (Terrain terreno : terrenos) {
+			procesarTerreno(terreno);
+		}
 		prepare();
         shader.start();
         shader.loadCieloColor(RED, GREEN, BLUE);
@@ -90,6 +100,7 @@ public class MasterRenderer {
         terrainShader.loadViewMatrix(camara);
         terrainRenderer.render(terrains);
         terrainShader.stop();
+        syboxRenderer.render(camara);
         terrains.clear();
         entidades.clear();
 	}
@@ -157,6 +168,9 @@ public class MasterRenderer {
         projectionMatrix.m33 = 0;
     }
 	
+    /**
+     * Métdo con Controles adicionales ara revisar el juego
+     */
     public void controlesRenderizacion() {
 		if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
 		       GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);

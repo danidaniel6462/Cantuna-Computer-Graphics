@@ -19,7 +19,7 @@ public class GlobalConstants {
 	//------------------------Display en Clase DisplayManager----------------------------
 	
 	/**
-	 * <b>Display en Clase DisplayManager </b>
+	 * <h1>Display en Clase DisplayManager </h1>
 	 * @param TITULO Título de la pantalla del Videojuego
 	 * @param WIDTH_DISPLAY Ancho de la pantalla del Videojuego
 	 * @param HEIGHT_DISPLAY Alto de la pantalla del Videojuego
@@ -32,7 +32,7 @@ public class GlobalConstants {
 	
 	//------------------------Cámara en Clase MasterRender-----------------------------
 	/**
-	 * <b>Cámara en Clase MasterRender</b>
+	 * <h1>Cámara en Clase MasterRender</h1>
 	 * @param FOV ángulo de proyección de la cámara
 	 * @param PLANO_CERCANO plano que está cercano a la cámara, punto en el eje Z
 	 * @param PLANO_LEJANO plano de la profundidad de la cámara.
@@ -43,6 +43,7 @@ public class GlobalConstants {
 	
 	//------------------------Terrain en Clase Terrain----------------------------
 	/**
+	 * 
 	 * @param SIZE_TERRAIN tamaño del terreno que se renderiza
 	 * @param MAX_HEIGHT máxima altura del terreno
 	 * @param MAX_PIXEL_COLOR total de colores en el terreno
@@ -65,9 +66,9 @@ public class GlobalConstants {
 	 * @param GREEN Color Verde
 	 * @param BLUE Color Azul
 	 */
-	public static final float RED = 0.5444f; // 146f / 255f;
-	public static final float GREEN = 0.62f; // 209f / 255f; 
-	public static final float BLUE =  0.69f;	// 188f / 255f; 
+	public static float RED = 0.5444f; // 146f / 255f;
+	public static float GREEN = 0.62f; // 209f / 255f; 
+	public static float BLUE =  0.69f;	// 188f / 255f; 
 	
 	//------------------------Player en Clase Player------------------------------
 	
@@ -98,7 +99,6 @@ public class GlobalConstants {
 	 * @param VERTEX_SKYBOX Arreglo de vértices del SkyBox, con la ayuda de estos vértices se crea un cubo 
 	 */
 	
-	// 
 	public static final float SIZE = 800f;
 	// nombre de las imágenes para formar el SkyBox (CubeMap)
 	public static final String[] TEXTURE_FILES  = {"right", "left", "top", "bottom", "back", "front"};

@@ -131,7 +131,7 @@ public class Loader {
 	}
 	
 	/**
-	 * Mñetodo para cargar un CubeMap
+	 * Método para cargar un CubeMap
 	 *  para utilizarlo en el SkyBox
 	 * @param textureFiles Arreglo de Strings que contiene los nombre de los seis archivos que formarán el CubeMpa para el Skybox
 	 * @return devuleve la identificación del CubeMap para utilizarlo en el Skybox del videojuego

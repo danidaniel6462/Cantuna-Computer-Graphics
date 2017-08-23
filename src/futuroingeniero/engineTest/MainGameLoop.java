@@ -315,7 +315,7 @@ public class MainGameLoop {
 	}
 	/**
 	 * Método principal que se ejecuta para iniciar la aplicación
-	 * @param args
+	 * @param args Argumento del Main
 	 */
 	public static void main(String[] args) {
 		MainGameLoop.run();	

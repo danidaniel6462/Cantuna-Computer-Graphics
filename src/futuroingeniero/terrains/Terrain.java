@@ -51,9 +51,12 @@ public class Terrain {
 	 *            coordenadas de la rejilla en el eje Z
 	 * @param loader
 	 *            variable para poder cargar el terreno
-	 * @param texture
+	 * @param texturePack
 	 *            variable que texturizará el terreno que se crea en esta clase
+	 * @param blendMap Textura con información para la mezcla de las multiTexturas
+	 * @param heightMap Textura con información para la altura de los diferetes puntos en el terreno
 	 */
+	
 	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texturePack, 
 			TerrainTexture blendMap, String heightMap) {
 		this.texturePack = texturePack;

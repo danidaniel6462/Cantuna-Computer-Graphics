@@ -1,8 +1,12 @@
 futuroingeniero.engineTest
 futuroingeniero.entities
+futuroingeniero.gameEditor
+futuroingeniero.guis
 futuroingeniero.models
+futuroingeniero.objConverter
 futuroingeniero.renderEngine
 futuroingeniero.shaders
+futuroingeniero.skybox
 futuroingeniero.terrains
 futuroingeniero.textures
 futuroingeniero.toolbox

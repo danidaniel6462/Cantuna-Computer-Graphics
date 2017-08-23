@@ -51,6 +51,7 @@ public class MasterRenderer {
 	
 	/**
 	 * Constructor de la Clase MasterRenderer
+	 * @param loader objeto para cargar los datos al VAO del SkyBox
 	 */
 	public MasterRenderer(Loader loader) {
 		// activamos la renderizaciónm de las caras que se ven, pero en este caso sacrificamos la parte posterior de las caras que no se ven
@@ -77,8 +78,10 @@ public class MasterRenderer {
 	/**
 	 * Método que realizará la renderización de varios objetos en el escenario del video juego
 	 * Éste método es muy parecido a lo que tenemos en el bucle principal del juego en la clase MainGameLoop   
-	 * @param sol variable para iluminar la escena
-	 * @param camara proyección de la cámara y ubicación de la misma 
+	 * @param items Lista de GameObjects
+	 * @param terrenos Lista de terreno
+	 * @param luces Lista de luces que se utlizan para iluminar el escenario
+	 * @param camara objeto Cámara
 	 */
 	public void render(List<Entity> items, List<Terrain> terrenos, List<Light> luces, Camara camara) {
 		for (Entity item : items) {
@@ -100,7 +103,7 @@ public class MasterRenderer {
         terrainShader.loadViewMatrix(camara);
         terrainRenderer.render(terrains);
         terrainShader.stop();
-        syboxRenderer.render(camara);
+        syboxRenderer.render(camara, RED, GREEN, BLUE);
         terrains.clear();
         entidades.clear();
 	}

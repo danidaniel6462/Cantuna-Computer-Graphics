@@ -99,14 +99,14 @@ public class StaticShader extends ShaderProgram{
 	
 	/**
 	 * Método para cargar las variables uniformes del número de Filas
-	 * @param numeroFilas
+	 * @param numeroFilas número de filas de la textura Atlas, para determinar el tamaño de la matriz de la imagen
 	 */
 	public void loadNumeroFilas(int numeroFilas) {
 		super.loadFloat(location_numeroFilas, numeroFilas);
 	}
 	
 	/**
-	 * Método para el desplazamiento x & y de las texturas Atlas
+	 * Método para el desplazamiento x e y de las texturas Atlas
 	 * @param x desplazamiento en X de la textura Atlas
 	 * @param y desplazamiento en Y de la textura Atlas
 	 */

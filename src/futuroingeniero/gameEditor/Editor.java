@@ -28,6 +28,10 @@ public class Editor extends JFrame {
 	 * Interfaz del editor del juego Cantuña
 	 */
 
+	/**
+	 * Método Main del Editor
+	 * @param args Argumento para el Editor
+	 */
 	public static void main(String[] args) {
 		start();
 		MainGameLoop.run();

@@ -27,7 +27,7 @@ public class GuiShader extends ShaderProgram{
 	
 	/**
 	 * Cargamos las transformaciones de la matriz de los GUI
-	 * @param matrix
+	 * @param matrix Matriz que se utiliza para realizar transformaciones a los GUI 
 	 */
 	public void loadTransformation(Matrix4f matrix){
 		super.loadMatrix(location_transformationMatrix, matrix);

@@ -80,7 +80,7 @@ public class TerrainRenderer {
 	
 	/**
 	 * Método para mezclar las texturas del terreno, se utilizan 5 texturas diferentes, incluyendo el blendMap.png
-	 * @param terrain 
+	 * @param terrain Terreno al cual se le aplica el multiTexture
 	 */
 	public void bindTextures(Terrain terrain) {
 		TerrainTexturePack texturePack = terrain.getTexturePack();

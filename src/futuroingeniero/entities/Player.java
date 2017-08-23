@@ -33,6 +33,7 @@ public class Player extends Entity{
 	 * Constructor de la clase Player
 	 * Este método es igual al de la clase Entidad ya que se extiende de la Clase Entity
 	 * @param model modelo para renderizar
+	 * @param nombre nombre de la entidad o item que se renderiza
 	 * @param position vecto3 que incializa la posición del modelo
 	 * @param rotX variable que incializa la el ángulo de rotación en X
 	 * @param rotY variable que incializa la el ángulo de rotación en Y
@@ -48,6 +49,7 @@ public class Player extends Entity{
 	 * En este método se realiza el cálculo de la nueva posición del jugador en el espacio
 	 * con ayuda de funciones trigonométricas
 	 * @param terreno valor que determina en que terreno se ecuentra el jugador
+	 * @param entidad item
 	 */
 	public void move(Terrain terreno, Entity entidad) {
 		// obtenemos los eventos del teclado

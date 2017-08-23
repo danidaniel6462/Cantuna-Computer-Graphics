@@ -15,7 +15,7 @@ import org.lwjgl.util.vector.Vector3f;
 public class Camara {
 
 	// -----------------------------Attributes-------------------------------
-	private float distanciaDesdeJugador = 50;	// distancia entre el jugador y la cámara
+	private float distanciaDesdeJugador = 40;	// distancia entre el jugador y la cámara
 	private float anguloAlrededorJugador = 0;	// ángulo alrededor del jugador
 	
 	/**
@@ -26,7 +26,7 @@ public class Camara {
 	 * @param roll variable para la rotación en Z
 	 */
 	private Vector3f posicion = new Vector3f(0, 0, 0);
-	private float picado = 20f;  // pitch
+	private float picado = 10f;  // pitch
 	private float paneo; // yaw
 	private float roll; // roll
 	

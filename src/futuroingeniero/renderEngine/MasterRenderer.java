@@ -71,6 +71,9 @@ public class MasterRenderer {
 		GL11.glCullFace(GL11.GL_BACK);
 	}
 	
+	/**
+	 * Método que desactiva la renderización de las caras posteriores de las entidades
+	 */
 	public static void disableCulling() {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 	}
@@ -151,6 +154,14 @@ public class MasterRenderer {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glClearColor(RED, GREEN, BLUE, 1);
+	}
+	
+	/**
+	 * Retorno la matrix de proyección 
+	 * @return Retorna la matrix de proyección 
+	 */
+	public Matrix4f getProyeccionMatrix() {
+		return projectionMatrix;
 	}
 	
 	/**

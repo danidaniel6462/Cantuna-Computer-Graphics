@@ -74,7 +74,7 @@ public class Player extends Entity{
 		
 		// obtenemos la altura del terreno con la posición del jugador
 		// con este valor podemos realizar la colisión del jugador con el terreno  
-		float terrainHeight = terreno.getHeighOfTerrain(super.getPosition().x, super.getPosition().z);
+		float terrainHeight = terreno.getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
 
 		// comprobamos que el personaje colisione con el terreno
 		if(super.getPosition().y < terrainHeight) { 

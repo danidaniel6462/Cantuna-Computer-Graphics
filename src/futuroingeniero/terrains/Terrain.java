@@ -73,7 +73,7 @@ public class Terrain {
 	 * @param worldZ posición en Z del terreno en el espacio del videojuego  
 	 * @return devvuelve la coordenada en Y que será la altura del terreno en el punto X, Z
 	 */
-	public float getHeighOfTerrain(float worldX, float worldZ) {
+	public float getHeightOfTerrain(float worldX, float worldZ) {
 		// convertimos las posiciones del las coordenadas del mundo en coordenadas del terreno
 		float terrainX = worldX - this.x;
 		float terrainZ = worldZ - this.z;

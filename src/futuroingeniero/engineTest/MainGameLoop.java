@@ -31,6 +31,7 @@ import futuroingeniero.terrains.Terrain;
 import futuroingeniero.textures.ModelTexture;
 import futuroingeniero.textures.TerrainTexture;
 import futuroingeniero.textures.TerrainTexturePack;
+import futuroingeniero.toolbox.MousePicker;
 
 /**
  * @author Daniel Loza
@@ -154,12 +155,12 @@ public class MainGameLoop {
 				float x = random.nextFloat() * 1600 - 800;
 				float z = random.nextFloat() * -800;
 				terrenoActual = terrain[(int) (x / SIZE_TERRAIN + 1)][(int) (z / SIZE_TERRAIN + 1)];
-				float y = terrenoActual.getHeighOfTerrain(x, z);
+				float y = terrenoActual.getHeightOfTerrain(x, z);
 				items.add(new Entity(flower, "flores", new Vector3f(x, y, z), 0, 0, 0, 1f));
 				x = random.nextFloat() * 1600 - 800;
 				z = random.nextFloat() * -800;
 				terrenoActual = terrain[(int) (x / SIZE_TERRAIN + 1)][(int) (z / SIZE_TERRAIN + 1)];
-				y = terrenoActual.getHeighOfTerrain(x, z);
+				y = terrenoActual.getHeightOfTerrain(x, z);
 				items.add(new Entity(grass, "cesped", new Vector3f(x, y, z), 0, 0, 0, 1));
 			}
 			if (i % 2 == 0) {
@@ -167,7 +168,7 @@ public class MainGameLoop {
 				float z = random.nextFloat() * -800;
 				int gridX = (int) (x / SIZE_TERRAIN + 1);
 				int gridZ = (int) (z / SIZE_TERRAIN + 1);
-				float y = terrain[gridX][gridZ].getHeighOfTerrain(x, z);
+				float y = terrain[gridX][gridZ].getHeightOfTerrain(x, z);
 				items.add(new Entity(fern, "helecho", random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 0.6f));
 			}
 		}	
@@ -177,7 +178,7 @@ public class MainGameLoop {
 			float x = random.nextFloat() * 1600 - 800;
 			float z = random.nextFloat() * -800;
 			terrenoActual = terrain[(int) (x / SIZE_TERRAIN + 1)][(int) (z / SIZE_TERRAIN + 1)];
-			float y = terrenoActual.getHeighOfTerrain(x, z);
+			float y = terrenoActual.getHeightOfTerrain(x, z);
 			if(i % 8 == 0) {
 				items.add(new Entity(arbolTextura, "arbol", new Vector3f(x, y, z), 0, 0, 0, 6));	
 			}
@@ -185,12 +186,12 @@ public class MainGameLoop {
 				x = random.nextFloat() * 1600 - 800;
 				z = random.nextFloat() * -800;
 				terrenoActual = terrain[(int) (x / SIZE_TERRAIN + 1)][(int) (z / SIZE_TERRAIN + 1)];
-				y = terrenoActual.getHeighOfTerrain(x, z);
+				y = terrenoActual.getHeightOfTerrain(x, z);
 				items.add(new Entity(pino, "pino", random.nextInt(4), new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, 1f));
 			}
 			// renderizando 5 boxes
 			if(i % 100 == 0) {
-				items.add(new Entity(boxTexture, "box", new Vector3f(90, terrain[1][0].getHeighOfTerrain(90, (-0.5f * i) - 50) + 3, (-0.5f * i) - 50), 0, 0, 0, 3));
+				items.add(new Entity(boxTexture, "box", new Vector3f(90, terrain[1][0].getHeightOfTerrain(90, (-0.5f * i) - 50) + 3, (-0.5f * i) - 50), 0, 0, 0, 3));
 			}
 		}
 		
@@ -220,25 +221,37 @@ public class MainGameLoop {
 		//Light luz = new Light(new Vector3f(2000, 2000, 1000), new Vector3f(1, 1, 1));
 		Light sol = new Light(new Vector3f(0, 10000, -7000), new Vector3f(0.4f, 0.4f, 0.4f));
 		luces.add(sol);
-		luces.add(new Light(new Vector3f(185, 10, -293), new Vector3f(2f, 0, 0), new Vector3f(1f, 0.01f, 0.002f)));
-		luces.add(new Light(new Vector3f(370, 18, -300), new Vector3f(0, 2, 2f), new Vector3f(1f, 0.01f, 0.002f)));
-		luces.add(new Light(new Vector3f(293, 7, -305), new Vector3f(2, 2, 0), new Vector3f(1f, 0.01f, 0.002f)));
 		
-		items.add(new Entity(lampara, "lamp", new Vector3f(185, -4.7f, -293), 0, 0, 0, 1));
+		luces.add(new Light(new Vector3f(370, 18, -300), new Vector3f(0, 2, 2f), new Vector3f(1f, 0.01f, 0.002f)));
+		luces.add(new Light(new Vector3f(293, 7, -305), new Vector3f(2, 2, 0f), new Vector3f(1f, 0.01f, 0.002f)));
+		
 		items.add(new Entity(lampara, "lamp", new Vector3f(370, 4.2f, -300), 0, 0, 0, 1));
 		items.add(new Entity(lampara, "lamp", new Vector3f(293, -6.8f, -305), 0, 0, 0, 1));
-		
 		items.add(new Entity(boxTexture, "miCubo", new Vector3f(0, 0, 0), 0, 0, 0, 0.6f));
 
+		Entity lamp = new Entity(lampara, "lamp", new Vector3f(185, -4.7f, -293), 0, 0, 0, 1);
+		Light lucesita = new Light(new Vector3f(185, 10, -293), new Vector3f(2f, 0, 0), new Vector3f(1f, 0.01f, 0.002f));
+		
+		items.add(lamp);
+		luces.add(lucesita);
+		
+		MousePicker picker = new MousePicker(camera, renderer.getProyeccionMatrix(), terrain[1][0]);
+		
+		
 		int gridX, gridZ;
 		// bucle del juego real
 		// donde ocurren todas las actualizaciones
 		while (!Display.isCloseRequested()) {
 			// game logic
-			diablillo.increaseRotation(0, 1, 0);
 			renderer.controlesRenderizacion();
 			camera.move();	
+			picker.update();
+			Vector3f terrainPoint = picker.getCurrentTerrainPoint();
 			
+			if(terrainPoint != null) {
+				lamp.setPosition(terrainPoint);
+				lucesita.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z));
+			}
 			gridX = (int) (player.getPosition().x / SIZE_TERRAIN + 1);
 			gridZ = (int) (player.getPosition().z / SIZE_TERRAIN + 1);
 			player.move(terrain[gridX][gridZ], entidadStall);

@@ -122,6 +122,13 @@ public class Camara {
 	}
 	
 	/**
+	 * @return the player
+	 */
+	public Player getPlayer() {
+		return player;
+	}
+
+	/**
 	 * Método para calcular la distancia horizontal de la cámara al jugador
 	 * @return devuelve el valor de la distancia entre el jugador y la cámara
 	 */

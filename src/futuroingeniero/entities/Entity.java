@@ -5,7 +5,7 @@ package futuroingeniero.entities;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import futuroingeniero.models.TexturedModel;
+import futuroingeniero.models.staticModel.models.TexturedModel;
 
 /**
  * @author Daniel Loza
@@ -20,6 +20,8 @@ public class Entity {
 	private Vector3f position;
 	private float rotX, rotY, rotZ;
 	private float scale;
+	
+	private float radio = 5f;
 	
 	private int textureIndex = 0;
 	
@@ -204,4 +206,10 @@ public class Entity {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+	/**
+	 * @return the radio
+	 */
+	public float getRadio() {
+		return radio;
+	}	
 }

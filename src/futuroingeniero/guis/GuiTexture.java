@@ -17,12 +17,16 @@ public class GuiTexture {
 	private int texture;
 	private Vector2f position;
 	private Vector2f scale;
+	// variables para colisiones en 2D
+	private float radio;
+	private float width;
+	private float height;
 
 	/**
 	 * Constructor de la Clase GuiTexture
 	 * @param texture identificación de la textura que se utiliza para el GUI
 	 * @param position posición de la imagen GUI
-	 * @param scale escala del GUI
+	 * @param scale escala del GUI (tamaño del GUI)
 	 * 
 	 * 	 *   (-1, 1)				  (1, 1)
 	 * 		____________|____________
@@ -43,6 +47,7 @@ public class GuiTexture {
 		this.texture = texture;
 		this.position = position;
 		this.scale = scale;
+		this.radio = Math.abs(scale.x);
 	}
 
 	/**
@@ -86,6 +91,53 @@ public class GuiTexture {
 	public void setScale(Vector2f scale) {
 		this.scale = scale;
 	}
+
+
+
+	//------ getters para colisiones en 2D ----------//
+	// estos métodos deberían estar en otra clase, en un futuro ya les ubico donde corresponde//
 	
+	/**
+	 * @param radio the radio to set
+	 */
+	public void setRadio(float radio) {
+		this.radio = radio;
+	}
 	
+	/**
+	 * @param width the width to set
+	 */
+	public void setWidth(float width) {
+		this.width = width;
+	}
+
+	/**
+	 * @param height the height to set
+	 */
+	public void setHeight(float height) {
+		this.height = height;
+	}
+
+	/**
+	 * @return the radio
+	 */
+	public float getRadio() {
+		return radio;
+	}
+	
+	/**
+	 * @return the width
+	 */
+	public float getWidth() {
+		width = Math.abs(2 * scale.x);
+		return width;
+	}
+
+	/**
+	 * @return the height
+	 */
+	public float getHeight() {
+		height = Math.abs(2 * scale.y);
+		return height;
+	}
 }

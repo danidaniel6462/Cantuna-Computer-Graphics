@@ -3,6 +3,8 @@
  */
 package futuroingeniero.terrains;
 
+import static futuroingeniero.utils.GlobalConstants.*;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -12,13 +14,11 @@ import javax.imageio.ImageIO;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import futuroingeniero.models.RawModel;
+import futuroingeniero.models.staticModel.models.RawModel;
 import futuroingeniero.renderEngine.Loader;
 import futuroingeniero.textures.TerrainTexture;
 import futuroingeniero.textures.TerrainTexturePack;
 import futuroingeniero.toolbox.Maths;
-
-import static futuroingeniero.renderEngine.GlobalConstants.*;
 
 /**
  * @author Daniel Loza

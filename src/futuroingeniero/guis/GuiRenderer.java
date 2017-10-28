@@ -11,7 +11,8 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
-import futuroingeniero.models.RawModel;
+import futuroingeniero.engineMain.Scene;
+import futuroingeniero.models.staticModel.models.RawModel;
 import futuroingeniero.renderEngine.EntityRenderer;
 import futuroingeniero.renderEngine.Loader;
 import futuroingeniero.toolbox.Maths;
@@ -77,6 +78,52 @@ public class GuiRenderer {
 		
 		// recorremos la lista de GUI para renderizar
 		for (GuiTexture gui: guisList) {
+			// activamos el uso de texturas en el videojuego
+			GL13.glActiveTexture(GL13.GL_TEXTURE0);
+			// vinculamos la textura con una llamada y su Identificación
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, gui.getTexture());
+			// matriz que recibe las transformaciones de posición y escala del GUI
+			Matrix4f matrix = Maths.createTransformationMatrix(gui.getPosition(), gui.getScale());
+			// carga la transformación en la matriz al Shader Uniform
+			shader.loadTransformation(matrix);
+			// dibujamos los elementos que cargamos para el GUI actual del bucle
+			GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
+		}
+		
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_BLEND);
+		// desactivamos los atributos usados del VAO
+		GL20.glDisableVertexAttribArray(0);
+		// desactivamos el VAO
+		GL30.glBindVertexArray(0);
+		shader.stop();
+		
+	}
+	
+	/**
+	 * Método para renderizar el GUI en la Pantalla del videojuego
+	 * <b>Este método es muy parecido al método para renderizar las Entidades, ver la Clase {@link EntityRenderer}</b>
+	 * @param guisList lista de GUI para renderizar
+	 */
+	public void render(Scene scene){
+		shader.start();
+		// cargamos el VAO
+		GL30.glBindVertexArray(quad.getVaoID());
+		/**
+		 * activamos los atributos a utilizar en el VAO, 
+		 * utilizamos los datos de la posicion 0 del VAO para los vertexPosition del GUI
+		 */
+		GL20.glEnableVertexAttribArray(0);
+		
+		// render del GUI
+		// activamos Blend para poder ver los objetos con transparencia
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		// desactivamos el test de profundidad ya que deseamos ver los GUI que están delante de los GUI anteriores
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		
+		// recorremos la lista de GUI para renderizar
+		for (GuiTexture gui: scene.getSceneGui().getGuis()) {
 			// activamos el uso de texturas en el videojuego
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
 			// vinculamos la textura con una llamada y su Identificación

@@ -12,7 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import futuroingeniero.engineTest.MainGameLoop;
+import futuroingeniero.engineMain.MainGameLoop;
+
 import java.awt.Panel;
 
 public class Editor extends JFrame {
@@ -34,10 +35,41 @@ public class Editor extends JFrame {
 	 */
 	public static void main(String[] args) {
 		start();
-		MainGameLoop.run();
+		new MainGameLoop().run();
 		// se debe crear un hilo separado para ejecutar el juego y la interfaz gráfica al mismo tiempo
 		// en un futuro me plantearé hacer el Thread por separado
 	}
+	
+	public static void start() {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Editor frame = new Editor();
+					frame.setSize(1280, 720);
+					frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+					frame.setResizable(true);
+					frame.setLocationRelativeTo(null);
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	// ---------- EDIT --------- //
+	
+	/*
+	if(punto2D != null) {
+		if(Mouse.isButtonDown(0)){
+			GuiTexture temp = Maths.getElementoGuiCirculo(punto2D, guis);
+			if(temp != null){
+				temp.setPosition(punto2D);	
+			}
+		}
+	}
+	
+	*/
 
 	/**
 	 * Create the frame.
@@ -70,28 +102,11 @@ public class Editor extends JFrame {
 		JButton btnTest = new JButton("Saltar");
 		btnTest.setBounds(481, 5, 89, 23);
 		panel.add(btnTest);
+		
 		btnTest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				MainGameLoop.crearEntidad();
 			}
 		});
-	}
-	
-	public static void start() {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Editor frame = new Editor();
-					frame.setSize(1280, 720);
-					frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-					frame.setResizable(true);
-					frame.setLocationRelativeTo(null);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		
 	}
 }

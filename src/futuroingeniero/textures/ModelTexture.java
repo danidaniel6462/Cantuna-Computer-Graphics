@@ -27,6 +27,15 @@ public class ModelTexture {
 
 	private int numeroFilas = 1;
 	
+
+	/**
+	 * Constructor que tiene como parámetro el id de la textura
+	 * @param id identificación de la textura
+	 */
+	public ModelTexture(int id) {
+		this.textureID = id;
+	}
+	
 	/**
 	 * @return el numeroColumnas
 	 */
@@ -69,14 +78,6 @@ public class ModelTexture {
 		this.tieneTransparencia = tieneTransparencia;
 	}
 
-	/**
-	 * Constructor que tiene como parámetro el id de la textura
-	 * @param id identificación de la textura
-	 */
-	public ModelTexture(int id) {
-		this.textureID = id;
-	}
-	
 	/**
 	 * @return el shineDamper
 	 */

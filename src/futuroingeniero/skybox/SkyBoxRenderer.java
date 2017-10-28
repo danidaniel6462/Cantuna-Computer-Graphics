@@ -3,7 +3,7 @@
  */
 package futuroingeniero.skybox;
 
-import static futuroingeniero.renderEngine.GlobalConstants.*;
+import static futuroingeniero.utils.GlobalConstants.*;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -12,9 +12,9 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
 import futuroingeniero.entities.Camara;
-import futuroingeniero.models.RawModel;
-import futuroingeniero.renderEngine.DisplayManager;
+import futuroingeniero.models.staticModel.models.RawModel;
 import futuroingeniero.renderEngine.Loader;
+import futuroingeniero.utils.DisplayManager;
 
 /**
  * @author Daniel Loza
@@ -79,7 +79,7 @@ public class SkyBoxRenderer {
 	 * el valor de 1 cargar la textura de la noche 
 	 */
 	private void bindTextures() {
-		time += DisplayManager.getFrameTimeSeconds() * 1000;
+		time += DisplayManager.deltaTime() * 1000;
 		time %= 24000;
 		int texture1;
 		int texture2;

@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import futuroingeniero.models.RawModel;
+import futuroingeniero.models.staticModel.models.RawModel;
 import futuroingeniero.shaders.TerrainShader;
 import futuroingeniero.terrains.Terrain;
 import futuroingeniero.textures.TerrainTexturePack;

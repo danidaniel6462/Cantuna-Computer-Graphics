@@ -23,7 +23,7 @@ import org.newdawn.slick.opengl.TextureLoader;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
-import futuroingeniero.models.RawModel;
+import futuroingeniero.models.staticModel.models.RawModel;
 import futuroingeniero.textures.TextureData;
 
 /**
@@ -122,7 +122,7 @@ public class Loader {
 		for(int vao:vaos) {
 			GL30.glDeleteVertexArrays(vao);
 		}
-		for(int vbo:vaos) {
+		for(int vbo:vbos) {
 			GL15.glDeleteBuffers(vbo);
 		}
 		for(int texture:textures) {

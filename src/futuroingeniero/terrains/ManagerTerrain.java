@@ -3,7 +3,7 @@
  */
 package futuroingeniero.terrains;
 
-import static futuroingeniero.renderEngine.GlobalConstants.SIZE_TERRAIN;
+import static futuroingeniero.utils.GlobalConstants.SIZE_TERRAIN;
 
 import java.util.ArrayList;
 import java.util.List;

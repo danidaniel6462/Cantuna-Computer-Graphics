@@ -7,9 +7,9 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import futuroingeniero.entities.Camara;
-import futuroingeniero.renderEngine.DisplayManager;
 import futuroingeniero.shaders.ShaderProgram;
 import futuroingeniero.toolbox.Maths;
+import futuroingeniero.utils.DisplayManager;
 
 /**
  * @author Daniel Loza
@@ -94,7 +94,7 @@ public class SkyBoxShader extends ShaderProgram{
 		matrix.m30 = 0;
 		matrix.m31 = 0;
 		matrix.m32 = 0;
-		rotacion += ROTATE_SPEED * DisplayManager.getFrameTimeSeconds();
+		rotacion += ROTATE_SPEED * DisplayManager.deltaTime();
 		Matrix4f.rotate((float) Math.toRadians(rotacion), new Vector3f(0, 1, 0), matrix, matrix);
 		super.loadMatrix(location_viewMatrix, matrix);
 	}	

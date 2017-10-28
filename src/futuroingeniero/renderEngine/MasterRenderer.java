@@ -3,7 +3,7 @@
  */
 package futuroingeniero.renderEngine;
 
-import static futuroingeniero.renderEngine.GlobalConstants.*;
+import static futuroingeniero.utils.GlobalConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,10 +15,11 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 
+import futuroingeniero.engineMain.Scene;
 import futuroingeniero.entities.Camara;
 import futuroingeniero.entities.Entity;
 import futuroingeniero.entities.Light;
-import futuroingeniero.models.TexturedModel;
+import futuroingeniero.models.staticModel.models.TexturedModel;
 import futuroingeniero.shaders.StaticShader;
 import futuroingeniero.shaders.TerrainShader;
 import futuroingeniero.skybox.SkyBoxRenderer;
@@ -109,6 +110,40 @@ public class MasterRenderer {
         syboxRenderer.render(camara, RED, GREEN, BLUE);
         terrains.clear();
         entidades.clear();
+	}	
+	
+	
+	/**
+	 * 
+	 * @param escena Escena que contiene todos los parámetros para renderizar
+	 */
+	public void render(Scene escena){
+		for (Entity item : escena.getSceneEntity().getItems()) {
+			procesarEntidad(item);
+		}
+		for (Terrain terreno : escena.getSceneEntity().getTerrenos()) {
+			procesarTerreno(terreno);
+		}
+		
+		procesarEntidad(escena.getCamara().getPlayer());
+				
+		prepare();
+        shader.start();
+        shader.loadCieloColor(RED, GREEN, BLUE);
+        shader.loadLuces(escena.getSceneEntity().getLuces());
+        shader.loadViewMatrix(escena.getCamara());
+        renderer.render(entidades);
+        shader.stop();
+        terrainShader.start();
+        terrainShader.loadCieloColor(RED, GREEN, BLUE);
+        terrainShader.loadLuces(escena.getSceneEntity().getLuces());
+        terrainShader.loadViewMatrix(escena.getCamara());
+        terrainRenderer.render(terrains);
+        terrainShader.stop();
+        syboxRenderer.render(escena.getCamara(), RED, GREEN, BLUE);
+        terrains.clear();
+        entidades.clear();
+		
 	}
 	
 	/**
@@ -183,17 +218,32 @@ public class MasterRenderer {
     }
 	
     /**
-     * Métdo con Controles adicionales ara revisar el juego
+     * Métdo con Controles adicionales para revisar el juego
      */
-    public void controlesRenderizacion() {
-		if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
-		       GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-		       GL11.glDisable(GL11.GL_TEXTURE_2D);
+    public void controlesRenderizacion(/* List<GuiTexture> listaGUI */){
+    	while (Keyboard.next()) {
+	    	if (Keyboard.getEventKeyState()) {
+				if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
+					GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+					GL11.glDisable(GL11.GL_TEXTURE_2D);
+				}
+	
+				if (Keyboard.isKeyDown(Keyboard.KEY_F2)) {
+					GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+					GL11.glEnable(GL11.GL_TEXTURE_2D);
+				}
+			}
+    	}
+		
+    	/* if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+			if(	Keyboard.isKeyDown(Keyboard.KEY_G)){
+				Guardar.guardarEdicionGUI(listaGUI);
+				System.out.println("logrado?");
+			}
 		}
-
-		if (Keyboard.isKeyDown(Keyboard.KEY_F2)) {
-		       GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
-		       GL11.glEnable(GL11.GL_TEXTURE_2D);
-		}
+		
+		*/ 
     }
+ 
+    
 }

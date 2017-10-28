@@ -3,14 +3,14 @@
  */
 package futuroingeniero.entities;
 
+import static futuroingeniero.utils.GlobalConstants.*;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
-import futuroingeniero.models.TexturedModel;
-import futuroingeniero.renderEngine.DisplayManager;
+import futuroingeniero.models.staticModel.models.TexturedModel;
 import futuroingeniero.terrains.Terrain;
-
-import static futuroingeniero.renderEngine.GlobalConstants.*;
+import futuroingeniero.utils.DisplayManager;
 
 /**
  * @author Daniel Loza
@@ -51,13 +51,13 @@ public class Player extends Entity{
 	 * @param terreno valor que determina en que terreno se ecuentra el jugador
 	 * @param entidad item
 	 */
-	public void move(Terrain terreno, Entity entidad) {
+	public void move(Terrain terreno) {
 		// obtenemos los eventos del teclado
 		checkInput();
 		// enviamos los datos para incrementar la rotación del personaje
-		super.increaseRotation(0, currenTurnSpeed * DisplayManager.getFrameTimeSeconds(), 0);
+		super.increaseRotation(0, currenTurnSpeed * DisplayManager.deltaTime(), 0);
 		// variable para calcular la distancia que recorrerá el personaje
-		float distance = currentSpeed * DisplayManager.getFrameTimeSeconds();
+		float distance = currentSpeed * DisplayManager.deltaTime();
 		// variable para calcular el delta X en el triángulo de movimiento
 		// la fórmula sería 
 		// dx = distancia * sin(rotY)
@@ -68,9 +68,9 @@ public class Player extends Entity{
 		// enviamos la nueva posición del jugador 
 		super.increasePosition(dx, 0, dz);
 		// cálculo de la fuerza del jugador para retornar al terreno una vez que salta
-		upwardsSpeed += GRAVITY * DisplayManager.getFrameTimeSeconds();
+		upwardsSpeed += GRAVITY * DisplayManager.deltaTime();
 		// enviamos la posición en Y al momento de saltar
-		super.increasePosition(0, upwardsSpeed * DisplayManager.getFrameTimeSeconds(), 0);
+		super.increasePosition(0, upwardsSpeed * DisplayManager.deltaTime(), 0);
 		
 		// obtenemos la altura del terreno con la posición del jugador
 		// con este valor podemos realizar la colisión del jugador con el terreno  
@@ -103,7 +103,7 @@ public class Player extends Entity{
 	}
 	
 	/**
-	 * Método que salte el jugador
+	 * Método para que salte el jugador
 	 * 
 	 */
 	public void jump() {

@@ -13,8 +13,8 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
 import futuroingeniero.entities.Entity;
-import futuroingeniero.models.RawModel;
-import futuroingeniero.models.TexturedModel;
+import futuroingeniero.models.staticModel.models.RawModel;
+import futuroingeniero.models.staticModel.models.TexturedModel;
 import futuroingeniero.shaders.StaticShader;
 import futuroingeniero.textures.ModelTexture;
 import futuroingeniero.toolbox.Maths;
